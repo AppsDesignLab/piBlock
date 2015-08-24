@@ -1,0 +1,182 @@
+#:import C kivy.utils.get_color_from_hex
+
+<RobotoQuoteLabel@Label>:
+    font_name: 'Roboto'
+    font_size: 9
+    color: app.themeColor()
+    markup: True
+    text_size: self.size
+
+<RobotoStatusLabel@Label>:
+    font_name: 'Roboto'
+    font_size: 15
+    color: app.themeColor()
+    markup: True
+    text_size: self.size
+
+<RobotoInfoLabel@Label>:
+    font_name: 'Roboto'
+    font_size: 15
+    color: app.themeColor()
+    markup: True
+    text_size: self.size
+
+<RobotoCondensedInfoValueLabel@Label>:
+    font_name: 'Roboto'
+    font_size: 12
+    color: app.themeColor()
+    markup: True
+    text_size: self.size
+
+<RobotoDateLabel@Label>:
+    font_name: 'Roboto'
+    font_size: 20
+    color: app.themeColor()
+    markup: True
+    
+
+<RobotoClockLabel@Label>:
+    font_name: 'Roboto'
+    font_size: 60
+    color: app.themeColor()
+    markup: True
+
+GridLayout:
+    cols: 1
+    rows: 3
+    padding: 10
+    GridLayout:
+        id: header
+        size_hint: 1, 0.25
+        cols: 3
+
+        Image:
+            id: bizlogo
+            #size_hint: 1, 0.35
+
+        BoxLayout:
+            id: clock
+            orientation: 'vertical'
+            
+            RobotoDateLabel:
+                id: date
+                size_hint: 1, 0.25
+            RobotoClockLabel:
+                id: time
+
+        BoxLayout:
+            id: info
+            orientation: 'vertical'
+            padding: 0
+            RobotoStatusLabel:
+                id: statuslabel
+                halign: 'center'
+                valign: 'top'
+                text_size: self.size
+
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 0
+                RobotoQuoteLabel:
+                    id: quoteinfotitlelabel
+                    halign: 'right'
+                    valign: 'bottom'
+                    text_size: self.size
+                    text: "[b]Latest Quote Info:[/b]"
+                RobotoQuoteLabel:
+                    id: quotebtcratelabel
+                    halign: 'right'
+                    valign: 'bottom'
+                    text_size: self.size
+                RobotoQuoteLabel:
+                    id: quotecurrencyratelabel
+                    halign: 'right'
+                    valign: 'bottom'
+                    text_size: self.size
+                RobotoQuoteLabel:
+                    id: quotesrclabel
+                    halign: 'right'
+                    valign: 'top'
+                    text_size: self.size
+
+    BoxLayout:
+        id: content
+        orientation: 'vertical'
+        
+        Image:
+            id: smileyIcon
+            
+
+        Image:
+            id: pbMainBanner
+
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 0
+
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 0
+                RobotoInfoLabel:
+                    halign: 'left'
+                    text: "[b]PiBlock's Current Settings[/b]"
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: 0
+                    RobotoCondensedInfoValueLabel:
+                        id: defaultcurrencylabel
+                        valign: 'bottom'
+                    RobotoCondensedInfoValueLabel:
+                        id: timeoutlabel
+                        valign: 'bottom'
+                    RobotoCondensedInfoValueLabel:
+                        id: controlportlabel
+                        valign: 'bottom'
+                    RobotoCondensedInfoValueLabel:
+                        id: emaillabel
+                        valign: 'top'
+
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 0
+                RobotoInfoLabel:
+                    halign: 'right'
+                    text: "[b]PiBlock's System Info[/b]"
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: 0
+                    RobotoCondensedInfoValueLabel:
+                        id: laststartedlabel
+                        halign: 'right'
+                        valign: 'bottom'
+                    RobotoCondensedInfoValueLabel:
+                        id: uptimelabel
+                        halign: 'right'
+                        valign: 'bottom'
+                    RobotoCondensedInfoValueLabel:
+                        id: fpslabel
+                        halign: 'right'
+                        valign: 'top'
+                    RobotoCondensedInfoValueLabel:
+                        id: sshaddresslabel
+                        halign: 'right'
+                        valign: 'top'
+
+    BoxLayout:
+        size_hint: 1, 0.1
+        GridLayout:
+            cols: 3
+            id: footer
+            Image:
+                id: pbLogoSmallFooter
+                size_hint: 0.5, 1
+            Label:
+                id: copyright
+                font_name: 'RobotoCondensed'
+                font_size: 12
+                color: app.themeColor()
+                markup: True
+                text: "Copyright © 2015, [b]Apps Design Lab[/b], All rights reserved."
+            Image:
+                id: adlLogoSmallFooter
+                size_hint: 0.5, 1

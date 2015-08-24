@@ -1,0 +1,11 @@
+To get things running:
+
+(a) virtualenv venv
+(b) . venv/bin/activate
+	-- if you dont have setup.py ... u need to integrate setup_tools
+(c) pip install --editable .
+
+
+pyvenv-3.4 venv
+source venv/bin.activate
+(venv)$ pip install --editable .

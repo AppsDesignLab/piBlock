@@ -1,0 +1,67 @@
+Admin User Commands:
+1.  resetPassword <username> <oldPassowrd> <newPassword> <newPassword> 
+    Conditions: User = 'admin' & Status = 'Initialised'
+2.  addConfig <key> <value>
+    Conditions: Key must Not Exist,  User = 'admin' & Status = 'Initialised'
+    DONE!
+3.  updateConfig <key> <value>
+    Conditions: Key must Exist,  User = 'admin' & Status = 'Initialised'
+    DONE!
+
+Admin & Operator Commands:
+1.  currentConfig [<key(1) <key(2)> ... <key(n)>]
+    Conditions: None
+    DONE!
+
+2.  supportedCurrencies
+    Conditions: None
+    DONE!
+
+3.  rate [<CurrencyIdentifier(1)> <CurrencyIdentifier(2)> ... <CurrencyIdentifier(n)>]
+    Conditions: None
+    DONE!
+
+4.  convertToBTC <amount> [<currency>]
+    Conditions: None
+    DONE!
+
+5.  convertToCurrency <amount> [<currency>]
+    Conditions: None
+    DONE!
+
+6.  uptime
+    Conditions: None
+    DONE!
+
+8.  clear
+    Conditions: None
+    DONE!
+
+9.  close
+    Conditions: None
+    DONE!
+
+10. tender <transactionID> <amount> [<currency>]
+    Conditions: Status = 'Tendering'
+
+11. help [<cmd(1)> ... <cmd(n)>]
+    Conditions: None
+    DONE!
+
+12. sysStatus
+    Conditions: None
+    DONE!
+
+13. startTendering
+    Conditions: User = 'admin' & Status = 'Initialised'
+
+14. stopTendering
+    Conditions: User = 'admin' & Status = 'Tendering' || Status = 'Processing'
+
+
+
+
+Status:
+1. Initialised
+2. Tendering
+3. Processing

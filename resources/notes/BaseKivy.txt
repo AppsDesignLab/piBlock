@@ -1,0 +1,170 @@
+#:import C kivy.utils.get_color_from_hex
+
+
+GridLayout:
+    cols: 1
+    rows: 3
+    GridLayout:
+        id: header
+        size_hint: 1, 0.25
+        cols: 3
+
+        Image:
+            id: bizlogo
+            #size_hint: 1, 0.35
+
+        BoxLayout:
+            id: clock
+            orientation: 'vertical'
+            
+            Label:
+                id: date
+                size_hint: 1, 0.25
+            Label:
+                id: time
+
+        BoxLayout:
+            id: info
+            orientation: 'vertical'
+            padding: 10
+            Label:
+                id: statuslabel
+                halign: 'center'
+                valign: 'top'
+                text_size: self.size
+
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    id: quoteinfotitlelabel
+                    halign: 'right'
+                    valign: 'bottom'
+                    text_size: self.size
+                    text: "[b]Latest Quote Info:[/b]"
+                Label:
+                    id: quotebtcratelabel
+                    halign: 'right'
+                    valign: 'bottom'
+                    text_size: self.size
+                Label:
+                    id: quotecurrencyratelabel
+                    halign: 'right'
+                    valign: 'bottom'
+                    text_size: self.size
+                Label:
+                    id: quotesrclabel
+                    halign: 'right'
+                    valign: 'top'
+                    text_size: self.size
+    BoxLayout:
+        id: content
+        orientation: 'vertical'
+        
+        Image:
+            id: smileyIcon
+            size_hint: 1, 0.35
+
+        Image:
+            id: pbMainBanner
+
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            
+            GridLayout:
+                #id: config
+                cols: 2
+                rows: 5
+                Label:
+                    halign: 'left'
+                    text: '[b]Current Config Settings[/b]'
+                Label:
+                    text: 
+                Label:
+                    halign: 'right'
+                    text: 'Default Currency:'
+                Label:
+                    id: defaultcurrencylabel
+                    halign: 'left'
+                    text: '[b]Default Currency:[/b]'
+                Label:
+                    halign: 'right'
+                    text: 'Processing Timeout:'
+                Label:
+                    id: timeoutlabel
+                    halign: 'left'
+                    text: '[b]Processing Timeout:[/b]'
+                Label:
+                    halign: 'right'
+                    text: 'Control Port:'
+                Label:
+                    id: controlportlabel
+                    halign: 'left'
+                    text: '[b]Control Port:[/b]'
+                Label:
+                    halign: 'right'
+                    text: 'Email:'
+                Label:
+                    id: emaillabel
+                    halign: 'left'
+                    text: '[b]Email:[/b]'
+
+            GridLayout:
+                #id: sysinfo
+                cols: 2
+                rows: 5
+
+                Label:
+                    halign: 'left'
+                    text: '[b]PiBlock's System Info[/b]'
+                Label:
+                    text: 
+                Label:
+                    halign: 'right'
+                    text: 'Started @ '
+                Label:
+                    id: laststartedlabel
+                    halign: 'left'
+                    text: '[b]Default Currency:[/b]'
+                Label:
+                    halign: 'right'
+                    text: 'Uptime:'
+                Label:
+                    id: uptimelabel
+                    halign: 'left'
+                    text: '[b]Processing Timeout:[/b]'
+                Label:
+                    halign: 'right'
+                    text: 'Avg Framerate:'
+                Label:
+                    id: fpslabel
+                    halign: 'left'
+                    text: '[b]Control Port:[/b]'
+                Label:
+                    halign: 'right'
+                    text: 'Control Server:'
+                Label:
+                    id: controlserverlabel
+                    halign: 'left'
+                    text: '[b]Email:[/b]'
+                
+                    
+
+    BoxLayout:
+        size_hint: 1, 0.1
+        GridLayout:
+            cols: 3
+            id: footer
+            Image:
+                id: pbLogoSmallFooter
+                size_hint: 0.5, 1
+            Label:
+                id: copyright
+                font_name: 'RobotoCondensed'
+                font_size: 12
+                color: app.themeColor()
+                markup: True
+                text: "Copyright © 2015, [b]Apps Design Lab[/b], All rights reserved."
+            Image:
+                id: adlLogoSmallFooter
+                size_hint: 0.5, 1

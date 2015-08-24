@@ -1,0 +1,15 @@
+
+Bitcoin PublickKey Master
+
+seed = "kul hu wal la hu ahad".encode('UTF-8')
+bip32MK = bip32_master_key(seed)
+
+>>> bip32MK
+'xprv9s21ZrQH143K3q6gocfHtDZ7fzPzi3CdgDW4BQoJV8c6cAwxzB56B9NHWn9KDEQdFTRJySt8ZG3T1CskaCLSvy6R1mAyZy4dkus13zswuy3'
+
+>>> bip32MasterPubKey = bip32_privtopub(bip32MK)
+>>> bip32MasterPubKey
+'xpub661MyMwAqRbcGKB9ueCJFMVrE2EV7VvV3SReyoCv3U95UyH7XiPLiwgmN567J5Tg5kWhnBSiVa5Fz3vJKLyqKpnguJ3fdTURtwXJ5Ldjpk9'
+
+
+

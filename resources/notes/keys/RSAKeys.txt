@@ -1,0 +1,14 @@
+RSA Keys
+
+Steps:
+1. go into root piBlock directory
+2. execute 
+    $ ssh-keygen -t rsa
+    Generating public/private rsa key pair.
+    Enter file in which to save the key: "/keys/RSA/id_rsa"
+    Enter passphrase (empty for no passphrase): <No Passphrase>
+    Enter same passphrase again: <No Passphrase>
+    Your identification has been saved in /home/jesstess/.ssh/id_rsa.
+    Your public key has been saved in /home/jesstess/.ssh/id_rsa.pub.
+    The key fingerprint is:
+    6b:13:3a:6e:c3:76:50:c7:39:c2:e0:8b:06:68:b4:11 jesstess@kid-charlemagne 
