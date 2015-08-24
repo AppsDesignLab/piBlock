@@ -1008,7 +1008,7 @@ class PiBlockSSHControlServer(protocol.Factory):
 
         self.factory = factory.SSHFactory()
         self.factory.portal = portal.Portal(PiBlockSSHRealm(self.app))
-        self.factory.portal.registerChecker(checkers.FilePasswordDB("encrptdpwd", hash=hash))
+        self.factory.portal.registerChecker(checkers.FilePasswordDB("resources/encryptd/encrptdpwd", hash=hash))
 
         pubKey, privKey = self.getRSAKeys()
         self.factory.publicKeys = {'ssh-rsa': pubKey}
