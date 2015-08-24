@@ -10,9 +10,8 @@ import subprocess
 from cmd import Cmd
 
 from piBlockConfig import PiBlockConfig
-from piBlockConsole import PiBlockConsole
 from piBlockBTCQuote import PiBlockBTCQuote
-from bitcoin import *
+# from bitcoin import *
 
 
 

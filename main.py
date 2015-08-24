@@ -30,7 +30,6 @@ from twisted.internet import protocol, reactor
 # from twisted.logger import Logger
 from time import strftime
 from piBlockEngine import PiBlockEngine
-from piBlockConsole import PiBlockConsole
 from piBlockConfig import PiBlockConfig
 from piBlockBTCQuote import PiBlockBTCQuote
 # from piBlockControlServer import PiBlockControlServerFactory, PiBlockControlServer
