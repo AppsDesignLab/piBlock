@@ -11,9 +11,6 @@ from cmd import Cmd
 
 from piBlockConfig import PiBlockConfig
 from piBlockBTCQuote import PiBlockBTCQuote
-# from bitcoin import *
-
-
 
 class FileFormatError(Exception):
     pass
@@ -41,21 +38,9 @@ class PiBlockEngine():
         self.btcPricingLookup = PiBlockBTCQuote(self.config.get_configValueForKey('pricingLookupURL'))
         self.logger.debug("Initialising Lookup Object...Done!")
 
-            
-
-        
-
     #-------------------------------------------------------------
     # Getters & Setters
     #-------------------------------------------------------------
-
-    @property
-    def gui(self):
-        return self._gui
-
-    @gui.setter
-    def config(self, gui):
-        self._gui = gui
 
     @property
     def config(self):
@@ -137,6 +122,55 @@ class PiBlockEngine():
     def configFileName(self, configFileName):
         self._configFileName = configFileName
 
+    # RSAKeyLocation=/Users/abrarpeer/.ssh/id_rsa
+    # defaultCurrency=AUD
+    # lastDailyTxCount=0
+    # sshport=2020
+    # pricingLookupURL=https://blockchain.info/ticker
+    # kpub=xpub661MyMwAqRbcGKB9ueCJFMVrE2EV7VvV3SReyoCv3U95UyH7XiPLiwgmN567J5Tg5kWhnBSiVa5Fz3vJKLyqKpnguJ3fdTURtwXJ5Ldjpk9
+    # timeout=90000
+    # blockchainInterfaceURL=www.blockchain.info
+    # email=peerlabs@gmail.com
+
+    @property
+    def rsaKeyLocation(self):
+        return self.config.get_configValueForKey('RSAKeyLocation')
+
+    @property
+    def defaultCurrency(self):
+        return self.config.get_configValueForKey('defaultCurrency')
+
+    @property
+    def defaultCurrencySymbol(self):
+        return self.btcPricingLookup.getSymbolForCurrency(self.defaultCurrency)
+
+    @property
+    def pricingLookupURL(self):
+        return self.config.get_configValueForKey('pricingLookupURL')
+
+    @property
+    def lastDailyTxCount(self):
+        return self.config.get_configValueForKey('lastDailyTxCount')
+
+    @property
+    def sshPort(self):
+        return int(self.config.get_configValueForKey('sshport'))
+
+    @property
+    def kpub(self):
+        return self.config.get_configValueForKey('kpub')
+
+    @property
+    def timeout(self):
+        return self.config.get_configValueForKey('timeout')
+
+    @property
+    def blockchainInterfaceURL(self):
+        return self.config.get_configValueForKey('blockchainInterfaceURL')
+
+    @property
+    def email(self):
+        return self.config.get_configValueForKey('email')
 
     #-------------------------------------------------------------
     # Action Methods : General
@@ -206,15 +240,6 @@ class PiBlockEngine():
                 self.config.updateKeyValue(key, value)
                 self.logger.debug('Processing Command to update Config Setting...Done!')
 
-    #-------------------------------------------------------------
-    # Action Methods : Command Loop!
-    #-------------------------------------------------------------
-
-    def startControlServer(self):
-        self.logger.info('Starting up Control Server...')
-        reactor.listenTCP(9096, ControlServerFactory(self))
-        reactor.run()
-        self.logger.info('Starting up Control Server...Done!')
 
     #-------------------------------------------------------------
     # Action Methods : Lookup
@@ -287,7 +312,7 @@ class PiBlockEngine():
 
         if not curr:
 
-            defaultCurrency = self.config['defaultCurrency']
+            defaultCurrency = self.defaultCurrency
 
             curr = defaultCurrency
 

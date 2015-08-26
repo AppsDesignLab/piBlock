@@ -1002,20 +1002,24 @@ def hash(username, password, passwordHash):
 
 class PiBlockSSHControlServer(protocol.Factory):
 
-    def __init__(self, app):
-        
-        self.app = app
+    def __init__(self, app, port):
 
-        self.factory = factory.SSHFactory()
-        self.factory.portal = portal.Portal(PiBlockSSHRealm(self.app))
-        self.factory.portal.registerChecker(checkers.FilePasswordDB("resources/encryptd/encrptdpwd", hash=hash))
+        try:
+            self.app = app
 
-        pubKey, privKey = self.getRSAKeys()
-        self.factory.publicKeys = {'ssh-rsa': pubKey}
-        self.factory.privateKeys = {'ssh-rsa': privKey}
-    
-        reactor.listenTCP(int(self.app.sshport), self.factory)
-        # reactor.run()
+            self.factory = factory.SSHFactory()
+            self.factory.portal = portal.Portal(PiBlockSSHRealm(self.app))
+            self.factory.portal.registerChecker(checkers.FilePasswordDB("resources/encryptd/encrptdpwd", hash=hash))
+
+            pubKey, privKey = self.getRSAKeys()
+            self.factory.publicKeys = {'ssh-rsa': pubKey}
+            self.factory.privateKeys = {'ssh-rsa': privKey}
+
+            reactor.listenTCP(int(port), self.factory)
+
+        except Exception as e:
+
+            raise e
 
     def getRSAKeys(self):
 

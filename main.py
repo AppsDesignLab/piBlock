@@ -19,10 +19,9 @@ from kivy.core.text import LabelBase
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy.properties import ObjectProperty
+from kivy.properties import ObservableDict
 from kivy.logger import Logger
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.stacklayout import StackLayout
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics.context_instructions import Color
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
@@ -45,6 +44,80 @@ SMILEY1 = IMAGESFOLDER + 'Smiley-1.png'
 BIZLOGO = IMAGESFOLDER + 'bizLogo.png'
 THEMECOLOR = '#34AADC'
 
+class StartupScreen(Screen):
+
+    def __init__(self, **kwargs):
+        super(StartupScreen, self).__init__(**kwargs)
+        Clock.schedule_once(self._finish_init)
+
+    def _finish_init(self, dt):
+        Logger.debug("Screen {}...".format(self))
+        Logger.debug("Screen IDs = {}".format(self.ids.keys()))
+        Logger.debug("Screen Manager = {}".format(self.manager))
+        Logger.debug("App = {}".format(PiBlockApp))
+        # Clock.schedule_once(lambda dt: self.app.updateQuoteInfo(0), 0.1)
+        # Clock.schedule_once(lambda dt: PiBlockApp.loadStaticInfo(), 0.5)
+        # Clock.schedule_once(lambda dt: PiBlockApp.loadStaticImages())
+        # Clock.schedule_interval(PiBlockApp.updateClockInfo, 1)
+        # Clock.schedule_interval(PiBlockApp.updateQuoteInfo, 60)
+
+        Clock.schedule_interval(self.updateSystemInfo, 2)
+
+    def updateSystemInfo(self, nap):
+
+        Logger.debug("Updating System Info...")
+
+        self.getUptimeLabel().text = "[i]Running for:[/i] [b]{}[/b]".format(time.strftime('%H Hrs, %M Mins, %S Secs', time.gmtime(Clock.get_boottime())))
+        self.getFPSLabel().text = "[i]Avg FPS:[/i] [b]{0:.2f}[b]".format(Clock.get_fps())
+        Logger.debug("Updating System Info...Done!")
+
+    #-------------------------------------------------------------
+    # Common Screen Element References
+    #-------------------------------------------------------------
+    #['laststartedlabel', 'defaultcurrencylabel', 'sshaddresslabel', 'emaillabel', 'controlportlabel', 'timeoutlabel', 'smileyIcon', 'fpslabel', 'uptimelabel', 'pbMainBanner']
+
+    def getStartedLabel(self):
+        return self.ids['laststartedlabel']
+
+    def getDefaultCurrencyLabel(self):
+        return self.ids['defaultcurrencylabel']
+
+    def getSSHAddressLabel(self):
+         return self.ids['sshaddresslabel']
+
+    def getEmailLabel(self):
+        return self.ids['emaillabel']
+
+    def getControlPortLabel(self):
+        return self.ids['controlportlabel']
+
+    def getTimeoutLabel(self):
+        return self.ids['timeoutlabel']
+
+    def getSmileyIconImage(self):
+        return self.ids['smileyIconImage']
+
+    def getFPSLabel(self):
+        return self.ids['fpslabel']
+
+    def getUptimeLabel(self):
+        return self.ids['uptimelabel']
+
+    def getPBMainBannerImage(self):
+        return self.ids['pbMainBannerImage']
+
+
+
+
+
+
+
+class TenderScreen(Screen):
+    pass
+
+class PiBlockScreenManager(ScreenManager):
+    pass
+
 class PiBlockApp(App):
 
     #-------------------------------------------------------------
@@ -53,13 +126,19 @@ class PiBlockApp(App):
 
     @property
     def uptime(self):
-        return self._uptime
+        return time.gmtime(Clock.get_boottime())
 
-    @uptime.setter
-    def uptime(self, uptime):
-        self._uptime = uptime
-        if self._uptime != None:
-            self.root.ids.uptimelabel.text = "Running Time: [b]{}[/b]".format(self._uptime)
+    @property
+    def sshControlAddressCmd(self):
+        return "ssh user@{} -p {}".format(self.sshHostName, self.piBlockEngine.sshPort)
+
+    @property
+    def smiley1Image(self):
+        return SMILEY1
+
+    @property
+    def pbBannerImage(self):
+        return PBBANNER
 
     @property
     def lastStartupTime(self):
@@ -68,8 +147,6 @@ class PiBlockApp(App):
     @lastStartupTime.setter
     def lastStartupTime(self, lastStartupTime):
         self._lastStartupTime = lastStartupTime
-        if self._lastStartupTime != None:
-            self.root.ids.laststartedlabel.text = "Started @ [b]{}[/b]".format(self._lastStartupTime)
 
     @property
     def status(self):
@@ -78,87 +155,10 @@ class PiBlockApp(App):
     @status.setter
     def status(self, status):
         self._status = status
-        if self._status != None:
-            self.root.ids.statuslabel.text = "Status: [b]{}[/b]".format(self._status)
-
-    @property
-    def defaultCurrency(self):
-        return self._defaultCurrency 
-
-    @defaultCurrency.setter
-    def defaultCurrency(self, defaultCurrency):
-        self._defaultCurrency = defaultCurrency
-        if self._defaultCurrency != None:
-            self.defaultCurrencySymbol = self.piBlockEngine.getSymbolForCurrency(self._defaultCurrency)
-            self.root.ids.defaultcurrencylabel.text = "Default Currency: [b]{} {}[/b]".format(self._defaultCurrency, self.defaultCurrencySymbol)
-
-    @property
-    def defaultCurrencySymbol(self):
-        return self._defaultCurrencySymbol
-
-    @defaultCurrencySymbol.setter
-    def defaultCurrencySymbol(self, defaultCurrencySymbol):
-        self._defaultCurrencySymbol = defaultCurrencySymbol
-
-    @property
-    def currencyRate(self):
-        return self._currencyRate
-
-    @currencyRate.setter
-    def currencyRate(self, currencyRate):
-        self._currencyRate = currencyRate
-        if self._currencyRate != None:
-            self.root.ids.quotecurrencyratelabel.text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.defaultCurrency, self.defaultCurrencySymbol, self._currencyRate)
-
-    @property 
-    def btcRate(self):
-        return self._btcRate
-
-    @btcRate.setter
-    def btcRate(self, btcRate):
-        self._btcRate = btcRate
-        if self._btcRate != None:
-            self.root.ids.quotebtcratelabel.text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.defaultCurrency, self.defaultCurrencySymbol, self._btcRate)
-
-    @property
-    def timeout(self):
-        return self._timeout
-
-    @timeout.setter
-    def timeout(self, timeout):
-        self._timeout = timeout
-        if self._timeout != None:
-            self.root.ids.timeoutlabel.text = "BTC Tx Processing Timeout: [b]{}[/b] secs".format(self._timeout)
-
-    @property
-    def email(self):
-        return self._email
-
-    @email.setter
-    def email(self, email):
-        self._email = email
-        if self._email != None:
-            self.root.ids.emaillabel.text = "Email: [b]{}[/b]".format(self._email)
 
     @property
     def fps(self):
-        return self._fps
-
-    @fps.setter
-    def fps(self, fps):
-        self._fps = fps
-        if self._fps != None:
-            self.root.ids.fpslabel.text = "Avg Framerate: [b]{0:.2f} FPS[/b]".format(self._fps)
-
-    @property
-    def quoteSrc(self):
-        return self._quoteSrc
-
-    @quoteSrc.setter
-    def quoteSrc(self, quoteSrc):
-        self._quoteSrc = quoteSrc
-        if self._quoteSrc != None:
-            self.root.ids.quotesrclabel.text = "source: [i][b]{}[/b][/i]".format(self._quoteSrc)
+        return Clock.get_fps()
 
     @property
     def sshHostAddress(self):
@@ -177,39 +177,30 @@ class PiBlockApp(App):
         self._sshHostName = sshHostName
 
     @property
-    def sshport(self):
-        return self._sshport
+    def currentScreen(self):
+        return self._currentScreen
 
-    @sshport.setter
-    def sshport(self, sshport):
-        self._sshport = sshport
-        if self._sshport != None:
-            self.root.ids.controlportlabel.text = "Control Port: [b]{}[b]".format(self._sshport)
+    @currentScreen.setter
+    def currentScreen(self, currentScreen):
+        self._currentScreen = currentScreen
 
     def __init__(self, **kwargs):
         
         super(PiBlockApp, self).__init__(**kwargs)
 
         Logger.debug("Initialising...")
-        self.uptime = None
-        self.lastStartupTime = None
+
+        Logger.debug("Starting PiBlockEngine...")
+        self.piBlockEngine = PiBlockEngine()
+        Logger.debug("Starting PiBlockEngine...Done!")
+
+        self.lastStartupTime = strftime('%Y/%-m/%-d %H:%M:%S')
         self.status = None
-        self.defaultCurrency = None
-        self.defaultCurrencySymbol = None
-
-        #--
-        self.currencyRate = None
-        self.btcRate = None
-        self.timeout = None
-        self.email = None
-        self.fps = None
-
-        #--
-        # self.latestQuote = None
-        self.quoteSrc = None
         self.sshHostAddress = None
         self.sshHostName = None
-        self.sshport = None
+        self.sshPort = None
+        self.controlServer = None
+        self.currentScreen = None
 
         Logger.debug("Initialising...Done!")
 
@@ -220,21 +211,29 @@ class PiBlockApp(App):
     def on_start(self):
         Logger.debug("on_start...")
 
-        Logger.debug("Starting PiBlockEngine...")
-        self.piBlockEngine = PiBlockEngine()
-        Logger.debug("Starting PiBlockEngine...Done!")
+        self.root.current = 'startup'
+
+        self.currentScreen = self.root.ids['startup']
+
+        Logger.debug("ROOT IDS = {}".format(self.root.ids.keys()))
+        Logger.debug("ROOT IDS in Current Screen = {}".format(self.currentScreen.ids.keys()))
+
+        self.testCommonGUITreeRefsInCurrentScreen()
 
         Logger.debug("Scheduling Running Tasks...")
         Clock.schedule_once(lambda dt: self.loadStaticInfo(), 0.5)
         Clock.schedule_once(lambda dt: self.startControlServer(), 0.1)
-        Clock.schedule_once(lambda dt: self.updateQuoteInfo(0), 0.1)
+        Clock.schedule_once(lambda dt: self.loadQuoteInfo(), 0.3)
+        
         Clock.schedule_interval(self.updateClockInfo, 1)
-        Clock.schedule_interval(self.updateSystemInfo, 1)
         Clock.schedule_interval(self.updateQuoteInfo, 60)
+
         Logger.debug("Scheduling Running Tasks...Done!")
 
         self.status = 'Initialised'
-        # self.root.ids.statuslabel.text = "Status: [b]{}[/b]".format()
+        self.getHeaderStatusLabel().text = "Status: [b]{}[/b]".format(self.status)
+
+        # Clock.schedule_interval(self.updateSystemInfo, 1)
 
         Logger.debug("on_start...Done!")
 
@@ -242,80 +241,57 @@ class PiBlockApp(App):
     # Convenience Methods
     #-------------------------------------------------------------
 
-    def startControlServer(self):
-        Logger.debug("Starting Control Server...")
-        # self.piBlockEngine.startControlServer()
-        self.controlServer = PiBlockSSHControlServer(self)
-        # self.controlServer.startSSHServer()
-
-        Logger.debug("Starting Control Server...Done!")
-
     def updateClockInfo(self, nap):
         Logger.debug("Update ClockUI Objects...")
 
-        self.root.ids.date.text = strftime('[b]%A, %d %b %Y[/b]')
-        self.root.ids.time.text = strftime('[b]%I:%M[/b]:%S %p')
+        self.getHeaderClockDateLabel().text = strftime('[b]%A, %d %b %Y[/b]')
+        self.getHeaderClockTimeLabel().text = strftime('[b]%I:%M[/b]:%S %p')
 
         Logger.debug("Update ClockUI Objects...Done!")
-
-    def updateSystemInfo(self, nap):
-        Logger.debug("Updating System Info...")
-
-        self.uptime = "{}".format(time.strftime('%H:%M:%S', time.gmtime(Clock.get_boottime())))
-        self.fps = Clock.get_fps()
-        Logger.debug("Updating System Info...Done!")
 
     def updateQuoteInfo(self, nap):
         Logger.debug("Updating Quote Info...")
 
-        Logger.debug("Default Currency = {}".format(self.defaultCurrency))
+        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
 
-        if self.defaultCurrency != None:
+        if self.piBlockEngine.defaultCurrency != None:
             Logger.debug("Setting Quote Info...")
-            self.btcRate = self.piBlockEngine.rateForBTC(self.defaultCurrency)
-            self.currencyRate = self.piBlockEngine.rateForCurrency(self.defaultCurrency)
+
+            self.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
+            self.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
 
         Logger.debug("Loading & Setting Quote Info...Done!")
 
     def loadStaticInfo(self):
         Logger.debug("Loading Static Info...")
 
-        self.defaultCurrency = self.piBlockEngine.getConfigValueForKey('defaultCurrency')
-        self.quoteSrc = self.piBlockEngine.getConfigValueForKey('pricingLookupURL')
-        self.timeout = int(self.piBlockEngine.getConfigValueForKey('timeout'))/1000
-        self.sshport = self.piBlockEngine.getConfigValueForKey('sshport')
-        self.email = self.piBlockEngine.getConfigValueForKey('email')
-        self.lastStartupTime = strftime('%Y/%-m/%-d %H:%M:%S')
-
+        self.getHeaderQuoteSrcLabel().text = "[i]source: {}".format(self.piBlockEngine.pricingLookupURL)
         self.loadStaticImages()
 
-        self.initSshHost()
-
-        self.root.ids.sshaddresslabel.text = 'Control Server: [b]ssh <user>@{} -p {}[/b]'.format(self.sshHostAddress, self.sshport)
-
         Logger.debug("Loading Static Info...Done!")
+
+    def loadQuoteInfo(self):
+        Logger.debug("Updating Quote Info...")
+
+        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
+
+        if self.piBlockEngine.defaultCurrency != None:
+            Logger.debug("Setting Quote Info...")
+
+            self.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
+            self.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
+
+        Logger.debug("Loading & Setting Quote Info...Done!")
     
 
     def loadStaticImages(self):
         Logger.debug("Loading & Setting Static Images...")
 
-        self.root.ids.bizlogo.source = BIZLOGO
-        self.root.ids.pbLogoSmallFooter.source = PBLOGOSMALL
-        self.root.ids.adlLogoSmallFooter.source = ADLLOGOSMALL
-        self.root.ids.smileyIcon.source = SMILEY1
-        self.root.ids.pbMainBanner.source = PBBANNER
+        self.getHeaderBizLogo().source = BIZLOGO
+        self.getFooterPBLogoThumbnailImage().source = PBLOGOSMALL
+        self.getFooteraADLLogThumbNailImage().source = ADLLOGOSMALL
 
         Logger.debug("Loading & Setting Static Images...Done!")
-
-    def initSshHost(self):
-        Logger.debug("Initialise PiBlock SSH Host Address...")
-        
-        self.shhHostName = socket.gethostname()
-        Logger.debug("SSH HostName: {}".format(self.shhHostName))
-        self.sshHostAddress = socket.gethostbyname(self.shhHostName)
-
-        Logger.debug("SSH HostAddress: {}".format(self.sshHostAddress))
-        Logger.debug("Initialise PiBlock SSH Host Address...Done!")
 
     def themeColor(self):
         Logger.debug("ThemeColor Requested...")
@@ -324,9 +300,64 @@ class PiBlockApp(App):
 
         return get_color_from_hex(THEMECOLOR)
 
+    def getConfigValueForKey(self, key):
+
+        if key == 'RSAKeyLocation':
+            return self.piBlockEngine.rsaKeyLocation
+        elif key == 'defaultCurrency':
+            return self.piBlockEngine.defaultCurrency
+        elif key == 'defaultCurrencySymbol':
+            return self.piBlockEngine.defaultCurrencySymbol
+        elif key == 'pricingLookupURL':
+            return self.piBlockEngine.pricingLookupURL
+        elif key == 'lastDailyTxCount':
+            return self.piBlockEngine.lastDailyTxCount
+        elif key == 'sshPort':
+            return self.piBlockEngine.sshPort
+        elif key == 'kpub':
+            return self.piBlockEngine.kpub
+        elif key == 'timeout':
+            return self.piBlockEngine.timeout
+        elif key == 'blockchainInterfaceURL':
+            return self.piBlockEngine.blockchainInterfaceURL
+        elif key == 'email':
+            return self.piBlockEngine.email
+        else:
+            if self.piBlockEngine.config.get_configValueForKey(key) != None:
+                return self.piBlockEngine.config.get_configValueForKey(key)
+            else:
+                return "Unknown"
+
     #-------------------------------------------------------------
-    # PiBlock Control Server Methods
+    # PiBlock SSH Control Server Convenience Methods
     #-------------------------------------------------------------
+    def startControlServer(self):
+        Logger.debug("Starting Control Server...")
+        # self.piBlockEngine.startControlServer()
+
+        if not self.controlServer:
+            Logger.debug("Initialise PiBlock SSH Host...")
+
+            try:            
+                self.shhHostName = socket.gethostname()
+                Logger.debug("SSH HostName: {}".format(self.shhHostName))
+                self.sshHostAddress = socket.gethostbyname(self.shhHostName)
+
+                Logger.debug("SSH HostAddress: {}".format(self.sshHostAddress))
+
+            except Exception as e:
+                Logger.warning("Failed to initialise PiBlock SSH Host because: {}".format(e.message))
+        
+            Logger.debug("Initialise PiBlock SSH Host...Done!")
+
+        try:
+
+            self.controlServer = PiBlockSSHControlServer(self, int(self.piBlockEngine.sshPort))
+            #self.controlServer.startSSHServer()
+        except BaseException as e:
+            Logger.warning("Could Not start SSH Server because:\n{}".format(e.message))
+
+            Logger.debug("Starting Control Server...Done!")
 
     def on_controlServerConnected(self, conn):
         Logger.debug("Control Server Connected!\n Connection Details: {}".format(conn))
@@ -336,11 +367,74 @@ class PiBlockApp(App):
     def on_controlMsgRcvd(self, data):
         Logger.debug("A Control Message was recieved: {} from connection {}".format(data, self.controlServerConn))
 
-    def disconnect(self):
-        print('-- disconnecting')
-        if self.conn:
-            self.conn.loseConnection()
-            del self.conn
+
+    #-------------------------------------------------------------
+    # Common Screen Element References
+    #-------------------------------------------------------------
+
+    def getHeader(self):
+        return self.root.ids['header']
+
+    def getHeaderStatusLabel(self):
+        return self.getHeader().ids['statuslabel']
+
+    def getHeaderClock(self):
+        return self.getHeader().ids['clock']
+
+    def getHeaderClockTimeLabel(self):
+        return self.getHeaderClock().ids['time']
+
+    def getHeaderClockDateLabel(self):
+        return self.getHeaderClock().ids['date']
+
+    def getHeaderBizLogo(self):
+        return self.getHeader().ids['bizlogo']
+
+    def getHeaderQuote(self):
+        return self.getHeader().ids['quote']
+
+    def getHeaderQuoteBTCRateLabel(self):
+        return self.getHeaderQuote().ids['quotebtcratelabel']
+
+    def getHeaderQuoteCurrencyRateLabel(self):
+        return self.getHeaderQuote().ids['quotecurrencyratelabel']
+
+    def getHeaderQuoteSrcLabel(self):
+        return self.getHeaderQuote().ids['quotesrclabel']
+
+    def getFooter(self):
+        return self.root.ids['footer']
+
+    def getFooterPBLogoThumbnailImage(self):
+        return self.getFooter().ids['pblogothumbnail']
+
+    def getFooteraADLLogThumbNailImage(self):
+        return self.getFooter().ids['adllogothumbnail']
+
+    #-------------------------------------------------------------
+    # SomeTests
+    #-------------------------------------------------------------
+
+    def testCommonGUITreeRefsInCurrentScreen(self):
+
+        Logger.debug("Ids in Current = {}".format(self.root.ids.keys()))
+        Logger.debug("Ids in Current Screen = {}".format(self.currentScreen.ids.keys()))
+        Logger.debug("Ids in Current Screen Header = {}".format(self.getHeader().ids.keys()))
+        
+        Logger.debug("Ids in Current Screen Header BizLogo = {}".format(self.getHeaderBizLogo()))
+
+        Logger.debug("Ids in Current Screen Header Clock = {}".format(self.getHeaderClock().ids.keys()))
+        Logger.debug("Ids in Current Screen Header Time = {}".format(self.getHeaderClockTimeLabel()))
+        Logger.debug("Ids in Current Screen Header Date = {}".format(self.getHeaderClockDateLabel()))
+
+        Logger.debug("Ids in Current Screen Header Status Label = {}".format(self.getHeaderStatusLabel()))
+
+        Logger.debug("Ids in Current Screen Header Quote = {}".format(self.getHeaderQuote().ids.keys()))
+        Logger.debug("Ids in Current Screen Header Quote Btc Rate = {}".format(self.getHeaderQuoteBTCRateLabel()))
+        Logger.debug("Ids in Current Screen Header Quote Currency Rate = {}".format(self.getHeaderQuoteCurrencyRateLabel()))
+        Logger.debug("Ids in Current Screen Header Quote Src Rate = {}".format(self.getHeaderQuoteSrcLabel()))
+
+        Logger.debug("Ids in Current Screen Footer = {}".format(self.getFooter().ids.keys()))
 
 if __name__ == '__main__':
     Config.set('graphics', 'width', '640')

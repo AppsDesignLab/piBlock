@@ -6,7 +6,4 @@ pricingLookupURL=https://blockchain.info/ticker
 kpub=xpub661MyMwAqRbcGKB9ueCJFMVrE2EV7VvV3SReyoCv3U95UyH7XiPLiwgmN567J5Tg5kWhnBSiVa5Fz3vJKLyqKpnguJ3fdTURtwXJ5Ldjpk9
 timeout=90000
 blockchainInterfaceURL=www.blockchain.info
-foo=bar
 email=peerlabs@gmail.com
-foo2=bar3
-foo3=bar3

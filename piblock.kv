@@ -33,7 +33,6 @@
     font_size: 20
     color: app.themeColor()
     markup: True
-    
 
 <RobotoClockLabel@Label>:
     font_name: 'Roboto'
@@ -41,74 +40,102 @@
     color: app.themeColor()
     markup: True
 
-GridLayout:
-    cols: 1
-    rows: 3
-    padding: 10
-    GridLayout:
-        id: header
+<RobotoCondensedFooterLabel@Label>:
+    id: copyright
+    font_name: 'RobotoCondensed'
+    font_size: 12
+    color: app.themeColor()
+    markup: True
+    text: "Copyright © 2015, [b]Apps Design Lab[/b], All rights reserved."
+
+<BizLogoImage@Image>:
+
+<PBClock@BoxLayout>:
+    orientation: 'vertical'
+    RobotoDateLabel:
+        id: date
         size_hint: 1, 0.25
-        cols: 3
+    RobotoClockLabel:
+        id: time
 
-        Image:
-            id: bizlogo
-            #size_hint: 1, 0.35
+<PBStatusLabel@RobotoStatusLabel>:
+    text_size: self.size
 
-        BoxLayout:
-            id: clock
-            orientation: 'vertical'
-            
-            RobotoDateLabel:
-                id: date
-                size_hint: 1, 0.25
-            RobotoClockLabel:
-                id: time
+<PBQuote@BoxLayout>:
+    orientation: 'vertical'
+    spacing: 0
+    RobotoQuoteLabel:
+        id: quoteinfotitlelabel
+        halign: 'right'
+        valign: 'top'
+        text_size: self.size
+        text: "[b]Latest Quote Info:[/b]"
+    RobotoQuoteLabel:
+        id: quotebtcratelabel
+        halign: 'right'
+        valign: 'top'
+        text_size: self.size
+    RobotoQuoteLabel:
+        id: quotecurrencyratelabel
+        halign: 'right'
+        valign: 'top'
+        text_size: self.size
+    RobotoQuoteLabel:
+        id: quotesrclabel
+        halign: 'right'
+        valign: 'top'
+        text_size: self.size
 
-        BoxLayout:
-            id: info
-            orientation: 'vertical'
-            padding: 0
-            RobotoStatusLabel:
-                id: statuslabel
-                halign: 'center'
-                valign: 'top'
-                text_size: self.size
-
-            BoxLayout:
-                orientation: 'vertical'
-                spacing: 0
-                RobotoQuoteLabel:
-                    id: quoteinfotitlelabel
-                    halign: 'right'
-                    valign: 'bottom'
-                    text_size: self.size
-                    text: "[b]Latest Quote Info:[/b]"
-                RobotoQuoteLabel:
-                    id: quotebtcratelabel
-                    halign: 'right'
-                    valign: 'bottom'
-                    text_size: self.size
-                RobotoQuoteLabel:
-                    id: quotecurrencyratelabel
-                    halign: 'right'
-                    valign: 'bottom'
-                    text_size: self.size
-                RobotoQuoteLabel:
-                    id: quotesrclabel
-                    halign: 'right'
-                    valign: 'top'
-                    text_size: self.size
-
+<HeaderLayout@BoxLayout>:
+    size_hint: 1, 0.25
+    
+    #cols: 3
+  
+    BizLogoImage:
+        id: bizlogo
+        size_hint: 0.3, 1
+    
+    PBClock:
+        id: clock
+    
     BoxLayout:
-        id: content
         orientation: 'vertical'
+        padding: 0
+        size_hint: 0.3, 1
         
-        Image:
-            id: smileyIcon
+        PBStatusLabel:
+            id: statuslabel
+            halign: 'right'
+            valign: 'top'
+
+        PBQuote:
+            id: quote
+            halign: 'right'
+            valign: 'top'
             
+<FooterLayout@BoxLayout>:
+    size_hint: 1, 0.1
+    GridLayout:
+        cols: 3
+        id: footer
+        Image:
+            id: pblogothumbnail
+            size_hint: 0.5, 1
+        RobotoCondensedFooterLabel:
+        Image:
+            id: adllogothumbnail
+            size_hint: 0.5, 1
+
+<StartupScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Image:
+            id: smileyIconImage
+            source: app.smiley1Image
 
         Image:
-            id: pbMainBanner
+            id: pbMainBannerImage
+            source: app.pbBannerImage
 
         BoxLayout:
             orientation: 'horizontal'
@@ -124,17 +151,25 @@ GridLayout:
                     orientation: 'vertical'
                     spacing: 0
                     RobotoCondensedInfoValueLabel:
-                        id: defaultcurrencylabel
+                        text: "[i]Default Currency:[/i] [b]{}{}[/b]".format(app.getConfigValueForKey('defaultCurrencySymbol'), app.getConfigValueForKey('defaultCurrency'))
+                        halign: 'left'
                         valign: 'bottom'
+                        
                     RobotoCondensedInfoValueLabel:
-                        id: timeoutlabel
+                        text: "[i]Processing Timeout:[/i] [b]{} secs[/b]".format(int(app.getConfigValueForKey('timeout'))/1000)
+                        halign: 'left'
                         valign: 'bottom'
+                        
                     RobotoCondensedInfoValueLabel:
-                        id: controlportlabel
+                        text: "[i]SSH Control Server Port:[/i] [b]{}[/b]".format(app.getConfigValueForKey('sshPort'))
+                        halign: 'left'
                         valign: 'bottom'
+                        
                     RobotoCondensedInfoValueLabel:
-                        id: emaillabel
-                        valign: 'top'
+                        text: "[i]Email:[/i] [b]{}[/b]".format(app.getConfigValueForKey('email'))
+                        halign: 'left'
+                        valign: 'bottom'
+                        
 
             BoxLayout:
                 orientation: 'vertical'
@@ -146,7 +181,7 @@ GridLayout:
                     orientation: 'vertical'
                     spacing: 0
                     RobotoCondensedInfoValueLabel:
-                        id: laststartedlabel
+                        text: "[i]Started @:[/i] [b]{}[/b]".format(app.lastStartupTime)
                         halign: 'right'
                         valign: 'bottom'
                     RobotoCondensedInfoValueLabel:
@@ -156,27 +191,41 @@ GridLayout:
                     RobotoCondensedInfoValueLabel:
                         id: fpslabel
                         halign: 'right'
-                        valign: 'top'
+                        valign: 'bottom'
                     RobotoCondensedInfoValueLabel:
-                        id: sshaddresslabel
+                        text: "[i]Control SSH Address:[/i] [b]{}[/b]".format(app.sshControlAddressCmd)
                         halign: 'right'
-                        valign: 'top'
+                        valign: 'bottom'
 
+<TenderScreen>:
     BoxLayout:
-        size_hint: 1, 0.1
-        GridLayout:
-            cols: 3
-            id: footer
-            Image:
-                id: pbLogoSmallFooter
-                size_hint: 0.5, 1
-            Label:
-                id: copyright
-                font_name: 'RobotoCondensed'
-                font_size: 12
-                color: app.themeColor()
-                markup: True
-                text: "Copyright © 2015, [b]Apps Design Lab[/b], All rights reserved."
-            Image:
-                id: adlLogoSmallFooter
-                size_hint: 0.5, 1
+        id: content
+        orientation: 'vertical'
+        
+        RobotoInfoLabel:
+            id: sample
+            text: '[b]TENDERING SCREEN[/b]'
+
+
+#----ROOT LAYOUT
+
+GridLayout:
+    cols: 1
+    rows: 3
+    padding: 10
+    HeaderLayout:
+        id: header
+        
+    PiBlockScreenManager:
+        StartupScreen:
+            id: startup
+            name: 'startup'
+            
+        TenderScreen:
+            id: tender
+
+    FooterLayout:
+        id: footer
+
+
+        
