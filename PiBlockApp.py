@@ -37,11 +37,20 @@ from piBlockSSHControlServer import PiBlockSSHControlServer
 RECOURCESFOLDER = 'resources/'
 FONTSFOLDER = RECOURCESFOLDER + 'fonts/'
 IMAGESFOLDER = RECOURCESFOLDER + 'images/'
-PBBANNER = IMAGESFOLDER + 'pbMainBanner.png'
+
+#COMMON IMAGES
 PBLOGOSMALL = IMAGESFOLDER + 'pbLogoSmall.png'
 ADLLOGOSMALL = IMAGESFOLDER + 'AppsDesignLogo64.png'
-SMILEY1 = IMAGESFOLDER + 'Smiley-1.png'
 BIZLOGO = IMAGESFOLDER + 'bizLogo.png'
+#STARTUP SCREEN IMAGES
+PBBANNER = IMAGESFOLDER + 'pbMainBanner.png'
+STARTUPSMILEY = IMAGESFOLDER + 'startupSmiley.png'
+#TENDER SCREEN IMAGES
+ACPTBTC = IMAGESFOLDER + 'acceptBitcoin.png'
+TENDERSMILEY= IMAGESFOLDER + 'tenderSmiley.png'
+
+
+
 THEMECOLOR = '#34AADC'
 
 class StartupScreen(Screen):
@@ -80,6 +89,15 @@ class StartupScreen(Screen):
         Logger.debug("Scheduling Screen Specific Recurring Tasks...Done!")
 
         Logger.debug("Entering Screen '{}'...Done!".format(self.manager.current))
+
+    def on_leave(self):
+        Logger.debug("Leaving Screen '{}'...".format(self.name))
+        
+        Clock.unschedule(self.updateStatusInfo)
+        Clock.unschedule(self.updateClockInfo)
+        Clock.unschedule(self.updateQuoteInfo)
+
+        Logger.debug("Leaving Screen '{}'...Done!".format(self.name))
 
     #-------------------------------------------------------------
     # Common UI Element Updates
@@ -151,6 +169,7 @@ class StartupScreen(Screen):
 
         self.getUptimeLabel().text = "[i]Running for:[/i] [b]{}[/b]".format(time.strftime('%H Hrs, %M Mins, %S Secs', time.gmtime(Clock.get_boottime())))
         self.getFPSLabel().text = "[i]Avg FPS:[/i] [b]{0:.2f}[b]".format(Clock.get_fps())
+
         Logger.debug("Updating System Info...Done!")
 
     def getStartedLabel(self):
@@ -213,6 +232,16 @@ class TenderScreen(Screen):
         Logger.debug("Scheduling Comnmon Recurring Tasks...Done!")
 
         Logger.debug("Entering Screen '{}'...Done!".format(self.manager.current))
+
+    def on_leave(self):
+        Logger.debug("Leaving Screen '{}'...".format(self.name))
+        
+        Clock.unschedule(self.updateStatusInfo)
+        Clock.unschedule(self.updateClockInfo)
+        Clock.unschedule(self.updateQuoteInfo)
+
+        Logger.debug("Leaving Screen '{}'...Done!".format(self.name))
+
 
 
     #-------------------------------------------------------------
@@ -358,12 +387,20 @@ class PiBlockApp(App):
         return "ssh user@{} -p {}".format(self.sshHostName, self.piBlockEngine.sshPort)
 
     @property
-    def smiley1Image(self):
-        return SMILEY1
+    def startupSmileyImage(self):
+        return STARTUPSMILEY
+
+    @property
+    def tenderSmileyImage(self):
+        return TENDERSMILEY
 
     @property
     def pbBannerImage(self):
         return PBBANNER
+
+    @property
+    def acceptBitcoinImage(self):
+        return ACPTBTC
 
     @property
     def lastStartupTime(self):
@@ -634,13 +671,15 @@ class PiBlockApp(App):
         Logger.debug("Ids in Current Screen Footer = {}".format(self.getFooter().ids.keys()))
 
 if __name__ == '__main__':
-    Config.set('graphics', 'width', '640')
-    Config.set('graphics', 'height', '360')  # 16:9
-    Config.set('graphics', 'resizable', '0')
+    # Config.set('graphics', 'width', '1280')
+    # Config.set('graphics', 'height', '720')  # 16:9
+    Config.set('graphics', 'resizable', '1')
     Config.set('input', 'mouse', 'mouse,disable_multitouch')
     Config.set('kivy', 'log_enable', 1)
     Config.set('kivy', 'log_level', 'debug')
     LabelBase.register(name='Roboto', fn_regular=FONTSFOLDER  + 'Roboto-Light.ttf', fn_bold=FONTSFOLDER  + 'Roboto-Bold.ttf', fn_italic=FONTSFOLDER + 'Roboto-LightItalic.ttf')
     LabelBase.register(name='RobotoCondensed', fn_regular=FONTSFOLDER + 'RobotoCondensed-Light.ttf', fn_bold=FONTSFOLDER  + 'RobotoCondensed-Regular.ttf')
+    # Window.fullscreen = True
+    Window.size = (960, 540)
     Window.clearcolor = get_color_from_hex('#FFFFFF')
     PiBlockApp().run()

@@ -41,6 +41,12 @@
     color: app.themeColor()
     markup: True
 
+<RobotoTenderingScreenMessageLabel@Label>:
+    font_name: 'Roboto'
+    font_size: 30
+    color: app.themeColor()
+    markup: True
+
 <RobotoCondensedFooterLabel@Label>:
     id: copyright
     font_name: 'RobotoCondensed'
@@ -140,7 +146,8 @@
             orientation: 'vertical'
             Image:
                 id: smileyIconImage
-                source: app.smiley1Image
+                source: app.startupSmileyImage
+                
 
             Image:
                 id: pbMainBannerImage
@@ -223,15 +230,20 @@
             orientation: 'vertical'
             Image:
                 id: smileyIconImage
-                source: app.smiley1Image
+                source: app.tenderSmileyImage
 
             Image:
                 id: pbMainBannerImage
-                source: app.pbBannerImage
+                source: app.acceptBitcoinImage
+
+            BoxLayout:
+                RobotoTenderingScreenMessageLabel:
+                    id: sample
+                    text: '[b]Ready to accept your Bitcoin![/b]'
+                    halign: 'center'
+                    valign: 'middle'
         
-            RobotoInfoLabel:
-                id: sample
-                text: '[b]TENDERING SCREEN[/b]'
+            
 
         FooterLayout:
             id: footer
