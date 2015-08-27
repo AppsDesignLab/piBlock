@@ -87,6 +87,10 @@ class PiBlockSSHProtocol(recvline.HistoricRecvLine):
                 cmd = 'supportedCurrencies'
             elif cmd == 'stat':
                 cmd = 'sysStatus'
+            elif cmd == 'startX':
+                cmd = 'startTendering'
+            elif cmd == 'stopX':
+                cmd = 'stopTendering'
 
             func = self.getCommandFunc(cmd)
             if func:
@@ -200,13 +204,13 @@ piBlock> addConfig email someone@somewhere.com\n"""
 
         self.logger.debug("Started...")
 
-        if not (self.isAdminUser() or self.isAppStatusInitialised()):
+        if not self.isAdminUser() or not self.isAppStatusInitialised():
 
             self.terminal.write("[Permission Denied] -  Only Admin user can add a config setting or PiBlock can only add a config setting when it is in the 'Initialised' state.")
             self.terminal.nextLine()
             self.terminal.write("To add a config setting, make sure you are logged in as 'admin' and PiBlock is in the 'Initialised' state.")
-            self.nextLine()
-            self.nextLine()
+            self.terminal.nextLine()
+            self.terminal.nextLine()
 
         else:
 
@@ -287,13 +291,13 @@ piBlock> updateConfig email someone@somewhere.com\n"""
 
         self.logger.debug("Started...")
 
-        if not (self.isAdminUser() or self.isAppStatusInitialised()):
+        if not self.isAdminUser() or not self.isAppStatusInitialised():
 
             self.terminal.write("[Permission Denied] -  Only Admin user can add a config setting or PiBlock can only add a config setting when it is in the 'Initialised' state.")
             self.terminal.nextLine()
             self.terminal.write("To add a config setting, make sure you are logged in as 'admin' and PiBlock is in the 'Initialised' state.")
-            self.nextLine()
-            self.nextLine()
+            self.terminal.nextLine()
+            self.terminal.nextLine()
 
         else:
 
@@ -823,6 +827,91 @@ piBlock> close\n"""
         self.terminal.loseConnection()
 
         self.logger.debug("Finished!")
+
+    #-------------------------------------------------------------
+    #Commands: Start Tendering
+    #-------------------------------------------------------------
+
+    def do_startTendering(self):
+
+         #DOCUMENTATION BLOCK
+
+        """\nMoves PiBlock from an Initialised State to a Tendering State.\n=============================================================\n
+Expects No Arguments. A Tendering State where PiBlock is ready to tender Bitcoin transactions\n
+Conditions: User = 'admin' & Status = 'Initialised'\n
+Shortcut: 'startX'
+Usage Syntax: 'startTendering'\n
+Example:
+piBlock> startTendering\n"""
+
+        self.logger.debug("Started...")
+
+        if not self.isAdminUser() or not self.isAppStatusInitialised():
+
+            self.terminal.write("[Permission Denied] -  Only Admin user can add move PiBlock into a 'Tendering' state when it is in the 'Initialised' state.")
+            self.terminal.nextLine()
+            self.terminal.write("To move PiBlock into a 'Tendering' state, make sure you are logged in as 'admin' and PiBlock is in the 'Initialised' state.")
+            self.terminal.nextLine()
+            self.terminal.nextLine()
+
+        else:
+
+            self.terminal.write("Attempting to move PiBlock to a Tendering State!")
+            self.terminal.nextLine()
+
+            try:
+
+                self.app.moveIntoTenderingState()
+
+            except Exception as e:
+                self.terminal.write("Could not move PiBlock to a Tendering State!")
+                self.terminal.nextLine()
+                self.terminal.write("Reason: {}".format(e.message))
+
+        self.logger.debug("Finished!")
+
+    #-------------------------------------------------------------
+    #Commands: Start Tendering
+    #-------------------------------------------------------------
+
+    def do_stopTendering(self):
+
+         #DOCUMENTATION BLOCK
+
+        """\nMoves PiBlock from a Tendering State to an Initialised State.\n=============================================================\n
+Expects No Arguments. An Initialised state is when PiBlock cannot process Bitcoins but config settings can be adjusted and other administrative tasks performed.\n
+Conditions: User = 'admin' & Status = 'Tendering'\n
+Shortcut: 'stopX'
+Usage Syntax: 'stopTendering'\n
+Example:
+piBlock> stopTendering\n"""
+
+        self.logger.debug("Started...")
+
+        if not self.isAdminUser() or not self.isAppStatusTendering():
+
+            self.terminal.write("[Permission Denied] -  Only Admin user can add move PiBlock out of a 'Tendering' state when it is not in the 'Tendering' state.")
+            self.terminal.nextLine()
+            self.terminal.write("To move PiBlock into a 'Tendering' state, make sure you are logged in as 'admin' and PiBlock is in the 'Tendering' state.")
+            self.terminal.nextLine()
+            self.terminal.nextLine()
+
+        else:
+
+            self.terminal.write("Attempting to move PiBlock to a Tendering State!")
+            self.terminal.nextLine()
+
+            try:
+                
+                self.app.moveOutOfTenderingState()
+
+            except Exception as e:
+                self.terminal.write("Could not move PiBlock out of a Tendering State!")
+                self.terminal.nextLine()
+                self.terminal.write("Reason: {}".format(e.message))
+
+        self.logger.debug("Finished!")
+
 
     #-------------------------------------------------------------
     # Convenience Methods: Canned Text OUTPUT & Other Stuff

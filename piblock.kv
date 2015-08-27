@@ -1,4 +1,5 @@
 #:import C kivy.utils.get_color_from_hex
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
 
 <RobotoQuoteLabel@Label>:
     font_name: 'Roboto'
@@ -126,106 +127,114 @@
             id: adllogothumbnail
             size_hint: 0.5, 1
 
-<StartupScreen>:
-    BoxLayout:
-        orientation: 'vertical'
-        Image:
-            id: smileyIconImage
-            source: app.smiley1Image
-
-        Image:
-            id: pbMainBannerImage
-            source: app.pbBannerImage
+<StartupScreen@Screen>:
+    name: 'startup'
+    GridLayout:
+        cols: 1
+        rows: 3
+        padding: 10
+        HeaderLayout:
+            id: header
 
         BoxLayout:
-            orientation: 'horizontal'
-            spacing: 0
+            orientation: 'vertical'
+            Image:
+                id: smileyIconImage
+                source: app.smiley1Image
+
+            Image:
+                id: pbMainBannerImage
+                source: app.pbBannerImage
 
             BoxLayout:
-                orientation: 'vertical'
+                orientation: 'horizontal'
                 spacing: 0
-                RobotoInfoLabel:
-                    halign: 'left'
-                    text: "[b]PiBlock's Current Settings[/b]"
+
                 BoxLayout:
                     orientation: 'vertical'
                     spacing: 0
-                    RobotoCondensedInfoValueLabel:
-                        text: "[i]Default Currency:[/i] [b]{}{}[/b]".format(app.getConfigValueForKey('defaultCurrencySymbol'), app.getConfigValueForKey('defaultCurrency'))
+                    RobotoInfoLabel:
                         halign: 'left'
-                        valign: 'bottom'
-                        
-                    RobotoCondensedInfoValueLabel:
-                        text: "[i]Processing Timeout:[/i] [b]{} secs[/b]".format(int(app.getConfigValueForKey('timeout'))/1000)
-                        halign: 'left'
-                        valign: 'bottom'
-                        
-                    RobotoCondensedInfoValueLabel:
-                        text: "[i]SSH Control Server Port:[/i] [b]{}[/b]".format(app.getConfigValueForKey('sshPort'))
-                        halign: 'left'
-                        valign: 'bottom'
-                        
-                    RobotoCondensedInfoValueLabel:
-                        text: "[i]Email:[/i] [b]{}[/b]".format(app.getConfigValueForKey('email'))
-                        halign: 'left'
-                        valign: 'bottom'
-                        
+                        text: "[b]PiBlock's Current Settings[/b]"
+                    BoxLayout:
+                        orientation: 'vertical'
+                        spacing: 0
+                        RobotoCondensedInfoValueLabel:
+                            text: "[i]Default Currency:[/i] [b]{}{}[/b]".format(app.getConfigValueForKey('defaultCurrencySymbol'), app.getConfigValueForKey('defaultCurrency'))
+                            halign: 'left'
+                            valign: 'bottom'
+                            
+                        RobotoCondensedInfoValueLabel:
+                            text: "[i]Processing Timeout:[/i] [b]{} secs[/b]".format(int(app.getConfigValueForKey('timeout'))/1000)
+                            halign: 'left'
+                            valign: 'bottom'
+                            
+                        RobotoCondensedInfoValueLabel:
+                            text: "[i]SSH Control Server Port:[/i] [b]{}[/b]".format(app.getConfigValueForKey('sshPort'))
+                            halign: 'left'
+                            valign: 'bottom'
+                            
+                        RobotoCondensedInfoValueLabel:
+                            text: "[i]Email:[/i] [b]{}[/b]".format(app.getConfigValueForKey('email'))
+                            halign: 'left'
+                            valign: 'bottom'
+                            
 
-            BoxLayout:
-                orientation: 'vertical'
-                spacing: 0
-                RobotoInfoLabel:
-                    halign: 'right'
-                    text: "[b]PiBlock's System Info[/b]"
                 BoxLayout:
                     orientation: 'vertical'
                     spacing: 0
-                    RobotoCondensedInfoValueLabel:
-                        text: "[i]Started @:[/i] [b]{}[/b]".format(app.lastStartupTime)
+                    RobotoInfoLabel:
                         halign: 'right'
-                        valign: 'bottom'
-                    RobotoCondensedInfoValueLabel:
-                        id: uptimelabel
-                        halign: 'right'
-                        valign: 'bottom'
-                    RobotoCondensedInfoValueLabel:
-                        id: fpslabel
-                        halign: 'right'
-                        valign: 'bottom'
-                    RobotoCondensedInfoValueLabel:
-                        text: "[i]Control SSH Address:[/i] [b]{}[/b]".format(app.sshControlAddressCmd)
-                        halign: 'right'
-                        valign: 'bottom'
+                        text: "[b]PiBlock's System Info[/b]"
+                    BoxLayout:
+                        orientation: 'vertical'
+                        spacing: 0
+                        RobotoCondensedInfoValueLabel:
+                            text: "[i]Started @:[/i] [b]{}[/b]".format(app.lastStartupTime)
+                            halign: 'right'
+                            valign: 'bottom'
+                        RobotoCondensedInfoValueLabel:
+                            id: uptimelabel
+                            halign: 'right'
+                            valign: 'bottom'
+                        RobotoCondensedInfoValueLabel:
+                            id: fpslabel
+                            halign: 'right'
+                            valign: 'bottom'
+                        RobotoCondensedInfoValueLabel:
+                            text: "[i]Control SSH Address:[/i] [b]{}[/b]".format(app.sshControlAddressCmd)
+                            halign: 'right'
+                            valign: 'bottom'
 
-<TenderScreen>:
-    BoxLayout:
-        id: content
-        orientation: 'vertical'
+        FooterLayout:
+            id: footer
+
+<TenderScreen@Screen>:
+    name: 'tender'
+    GridLayout:
+        cols: 1
+        rows: 3
+        padding: 10
         
-        RobotoInfoLabel:
-            id: sample
-            text: '[b]TENDERING SCREEN[/b]'
+        HeaderLayout:
+            id: header
 
+        BoxLayout:
+            orientation: 'vertical'
+            Image:
+                id: smileyIconImage
+                source: app.smiley1Image
 
-#----ROOT LAYOUT
-
-GridLayout:
-    cols: 1
-    rows: 3
-    padding: 10
-    HeaderLayout:
-        id: header
+            Image:
+                id: pbMainBannerImage
+                source: app.pbBannerImage
         
-    PiBlockScreenManager:
-        StartupScreen:
-            id: startup
-            name: 'startup'
-            
-        TenderScreen:
-            id: tender
+            RobotoInfoLabel:
+                id: sample
+                text: '[b]TENDERING SCREEN[/b]'
 
-    FooterLayout:
-        id: footer
+        FooterLayout:
+            id: footer
 
 
         

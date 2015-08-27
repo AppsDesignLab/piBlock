@@ -21,7 +21,7 @@ from kivy.utils import get_color_from_hex
 from kivy.properties import ObjectProperty
 from kivy.properties import ObservableDict
 from kivy.logger import Logger
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.graphics.context_instructions import Color
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
@@ -48,21 +48,103 @@ class StartupScreen(Screen):
 
     def __init__(self, **kwargs):
         super(StartupScreen, self).__init__(**kwargs)
+        Logger.debug("kwargs = {}".format(kwargs.keys()))
+        self.piBlockEngine = kwargs['piBlockEngine']
+
         Clock.schedule_once(self._finish_init)
 
     def _finish_init(self, dt):
         Logger.debug("Screen {}...".format(self))
         Logger.debug("Screen IDs = {}".format(self.ids.keys()))
         Logger.debug("Screen Manager = {}".format(self.manager))
-        Logger.debug("App = {}".format(PiBlockApp))
-        # Clock.schedule_once(lambda dt: self.app.updateQuoteInfo(0), 0.1)
-        # Clock.schedule_once(lambda dt: PiBlockApp.loadStaticInfo(), 0.5)
-        # Clock.schedule_once(lambda dt: PiBlockApp.loadStaticImages())
-        # Clock.schedule_interval(PiBlockApp.updateClockInfo, 1)
-        # Clock.schedule_interval(PiBlockApp.updateQuoteInfo, 60)
+        Logger.debug("Screen piBlockEngine = {}".format(self.piBlockEngine))
+        # Logger.debug("Screen Manager Root = {}".format(self.manager.root.ids.keys()))
+        # Logger.debug("App = {}".format(PiBlockApp()))
 
-        Clock.schedule_interval(self.updateSystemInfo, 2)
+    def on_enter(self):
+        Logger.debug("Entering Screen '{}'...".format(self.name))
 
+        Logger.debug("Scheduling Once Off Tasks...")
+        Clock.schedule_once(lambda dt: self.loadQuoteInfo(), 0.1)
+        Clock.schedule_once(lambda dt: self.loadStaticInfo(), 0.2)
+        Logger.debug("Scheduling Once Off Tasks...Done!")
+
+        Logger.debug("Scheduling Common Recurring Tasks...")
+        Clock.schedule_interval(self.updateStatusInfo, 1)
+        Clock.schedule_interval(self.updateClockInfo, 1)
+        Clock.schedule_interval(self.updateQuoteInfo, 15)
+        Logger.debug("Scheduling Comnmon Recurring Tasks...Done!")
+
+        Logger.debug("Scheduling Screen Specific Recurring Tasks...")
+        Clock.schedule_interval(self.updateSystemInfo, 1)
+        Logger.debug("Scheduling Screen Specific Recurring Tasks...Done!")
+
+        Logger.debug("Entering Screen '{}'...Done!".format(self.manager.current))
+
+    #-------------------------------------------------------------
+    # Common UI Element Updates
+    #-------------------------------------------------------------
+
+    def loadQuoteInfo(self):
+        Logger.debug("Updating Quote Info...")
+
+        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
+
+        if self.piBlockEngine.defaultCurrency != None:
+            Logger.debug("Setting Quote Info...")
+
+            self.manager.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
+            self.manager.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
+
+        Logger.debug("Loading & Setting Quote Info...Done!")
+
+    def loadStaticInfo(self):
+        Logger.debug("Loading Static Info...")
+
+        self.manager.getHeaderQuoteSrcLabel().text = "[i]source: {}".format(self.piBlockEngine.pricingLookupURL)
+        self.loadStaticImages()
+
+        Logger.debug("Loading Static Info...Done!")
+
+    def loadStaticImages(self):
+        Logger.debug("Loading & Setting Static Images...")
+
+        self.manager.getHeaderBizLogo().source = BIZLOGO
+        self.manager.getFooterPBLogoThumbnailImage().source = PBLOGOSMALL
+        self.manager.getFooteraADLLogThumbNailImage().source = ADLLOGOSMALL
+
+        Logger.debug("Loading & Setting Static Images...Done!")
+
+    def updateStatusInfo(self, nap):
+        Logger.debug("Update Status Objects...")
+        self.manager.getHeaderStatusLabel().text = "Status: [b]{}[/b]".format(self.manager.app.status)
+        Logger.debug("Update Status Objects...Done!")
+
+
+    def updateClockInfo(self, nap):
+        Logger.debug("Update ClockUI Objects...")
+
+        self.manager.getHeaderClockDateLabel().text = strftime('[b]%A, %d %b %Y[/b]')
+        self.manager.getHeaderClockTimeLabel().text = strftime('[b]%I:%M[/b]:%S %p')
+
+        Logger.debug("Update ClockUI Objects...Done!")
+
+    def updateQuoteInfo(self, nap):
+        Logger.debug("Updating Quote Info...")
+
+        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
+
+        if self.piBlockEngine.defaultCurrency != None:
+            Logger.debug("Setting Quote Info...")
+
+            self.manager.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
+            self.manager.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
+
+        Logger.debug("Loading & Setting Quote Info...Done!")
+
+    #-------------------------------------------------------------
+    # Screen Element References And UI Updates
+    #-------------------------------------------------------------
     def updateSystemInfo(self, nap):
 
         Logger.debug("Updating System Info...")
@@ -70,11 +152,6 @@ class StartupScreen(Screen):
         self.getUptimeLabel().text = "[i]Running for:[/i] [b]{}[/b]".format(time.strftime('%H Hrs, %M Mins, %S Secs', time.gmtime(Clock.get_boottime())))
         self.getFPSLabel().text = "[i]Avg FPS:[/i] [b]{0:.2f}[b]".format(Clock.get_fps())
         Logger.debug("Updating System Info...Done!")
-
-    #-------------------------------------------------------------
-    # Common Screen Element References
-    #-------------------------------------------------------------
-    #['laststartedlabel', 'defaultcurrencylabel', 'sshaddresslabel', 'emaillabel', 'controlportlabel', 'timeoutlabel', 'smileyIcon', 'fpslabel', 'uptimelabel', 'pbMainBanner']
 
     def getStartedLabel(self):
         return self.ids['laststartedlabel']
@@ -107,16 +184,164 @@ class StartupScreen(Screen):
         return self.ids['pbMainBannerImage']
 
 
-
-
-
-
-
 class TenderScreen(Screen):
-    pass
+
+    def __init__(self, **kwargs):
+        super(TenderScreen, self).__init__(**kwargs)
+        Logger.debug("kwargs = {}".format(kwargs.keys()))
+        self.piBlockEngine = kwargs['piBlockEngine']
+        Clock.schedule_once(self._finish_init)
+
+    def _finish_init(self, dt):
+        Logger.debug("Screen {}...".format(self))
+        Logger.debug("Screen IDs = {}".format(self.ids.keys()))
+        Logger.debug("Screen Manager = {}".format(self.manager))
+        Logger.debug("Screen piBlockEngine = {}".format(self.piBlockEngine))
+
+    def on_enter(self):
+        Logger.debug("Entering Screen '{}'...".format(self.name))
+
+        Logger.debug("Scheduling Once Off Tasks...")
+        Clock.schedule_once(lambda dt: self.loadQuoteInfo(), 0.1)
+        Clock.schedule_once(lambda dt: self.loadStaticInfo(), 0.2)
+        Logger.debug("Scheduling Once Off Tasks...Done!")
+
+        Logger.debug("Scheduling Common Recurring Tasks...")
+        Clock.schedule_interval(self.updateStatusInfo, 1)
+        Clock.schedule_interval(self.updateClockInfo, 1)
+        Clock.schedule_interval(self.updateQuoteInfo, 15)
+        Logger.debug("Scheduling Comnmon Recurring Tasks...Done!")
+
+        Logger.debug("Entering Screen '{}'...Done!".format(self.manager.current))
+
+
+    #-------------------------------------------------------------
+    # Common UI Element Updates
+    #-------------------------------------------------------------
+
+    def loadQuoteInfo(self):
+        Logger.debug("Updating Quote Info...")
+
+        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
+
+        if self.piBlockEngine.defaultCurrency != None:
+            Logger.debug("Setting Quote Info...")
+
+            self.manager.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
+            self.manager.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
+
+        Logger.debug("Loading & Setting Quote Info...Done!")
+
+    def loadStaticInfo(self):
+        Logger.debug("Loading Static Info...")
+
+        self.manager.getHeaderQuoteSrcLabel().text = "[i]source: {}".format(self.piBlockEngine.pricingLookupURL)
+        self.loadStaticImages()
+
+        Logger.debug("Loading Static Info...Done!")
+
+    def loadStaticImages(self):
+        Logger.debug("Loading & Setting Static Images...")
+
+        self.manager.getHeaderBizLogo().source = BIZLOGO
+        self.manager.getFooterPBLogoThumbnailImage().source = PBLOGOSMALL
+        self.manager.getFooteraADLLogThumbNailImage().source = ADLLOGOSMALL
+
+        Logger.debug("Loading & Setting Static Images...Done!")
+
+    def updateStatusInfo(self, nap):
+        Logger.debug("Update Status Objects...")
+        self.manager.getHeaderStatusLabel().text = "Status: [b]{}[/b]".format(self.manager.app.status)
+        Logger.debug("Update Status Objects...Done!")
+
+
+    def updateClockInfo(self, nap):
+        Logger.debug("Update ClockUI Objects...")
+
+        self.manager.getHeaderClockDateLabel().text = strftime('[b]%A, %d %b %Y[/b]')
+        self.manager.getHeaderClockTimeLabel().text = strftime('[b]%I:%M[/b]:%S %p')
+
+        Logger.debug("Update ClockUI Objects...Done!")
+
+    def updateQuoteInfo(self, nap):
+        Logger.debug("Updating Quote Info...")
+
+        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
+
+        if self.piBlockEngine.defaultCurrency != None:
+            Logger.debug("Setting Quote Info...")
+
+            self.manager.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
+            self.manager.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
+
+        Logger.debug("Loading & Setting Quote Info...Done!")
 
 class PiBlockScreenManager(ScreenManager):
-    pass
+    
+    def __init__(self, **kwargs):
+        super(PiBlockScreenManager, self).__init__(**kwargs)
+
+        Logger.debug("kwargs = {}".format(kwargs.keys()))
+        self.app = kwargs['piBlockApp']
+        self.transition = FadeTransition()
+
+        Clock.schedule_once(self._finish_init)
+
+    def _finish_init(self, dt):
+        Logger.debug("Screen Manager {}...".format(self))
+        # Logger.debug("Screen IDs = {}".format(self.ids.keys()))
+        # Logger.debug("Screen Manager = {}".format(self.manager))
+        # Logger.debug("Screen piBlockEngine = {}".format(self.piBlockEngine))
+        # Logger.debug("Screen Manager Root = {}".format(self.manager.root.ids.keys()))
+        # Logger.debug("App = {}".format(PiBlockApp()))
+
+
+    #-------------------------------------------------------------
+    # Common Screen Element References And UI Updates
+    #-------------------------------------------------------------
+
+    def getHeader(self):
+        currentScreen = self.get_screen(self.current)
+        Logger.debug("PiBlockScreenManager's Current Screen is {}".format(currentScreen))
+        return currentScreen.ids['header']
+
+    def getHeaderStatusLabel(self):
+        return self.getHeader().ids['statuslabel']
+
+    def getHeaderClock(self):
+        return self.getHeader().ids['clock']
+
+    def getHeaderClockTimeLabel(self):
+        return self.getHeaderClock().ids['time']
+
+    def getHeaderClockDateLabel(self):
+        return self.getHeaderClock().ids['date']
+
+    def getHeaderBizLogo(self):
+        return self.getHeader().ids['bizlogo']
+
+    def getHeaderQuote(self):
+        return self.getHeader().ids['quote']
+
+    def getHeaderQuoteBTCRateLabel(self):
+        return self.getHeaderQuote().ids['quotebtcratelabel']
+
+    def getHeaderQuoteCurrencyRateLabel(self):
+        return self.getHeaderQuote().ids['quotecurrencyratelabel']
+
+    def getHeaderQuoteSrcLabel(self):
+        return self.getHeaderQuote().ids['quotesrclabel']
+
+    def getFooter(self):
+        currentScreen = self.get_screen(self.current)
+        return currentScreen.ids['footer']
+
+    def getFooterPBLogoThumbnailImage(self):
+        return self.getFooter().ids['pblogothumbnail']
+
+    def getFooteraADLLogThumbNailImage(self):
+        return self.getFooter().ids['adllogothumbnail']
+
 
 class PiBlockApp(App):
 
@@ -195,14 +420,31 @@ class PiBlockApp(App):
         Logger.debug("Starting PiBlockEngine...Done!")
 
         self.lastStartupTime = strftime('%Y/%-m/%-d %H:%M:%S')
-        self.status = None
+        
         self.sshHostAddress = None
         self.sshHostName = None
         self.sshPort = None
         self.controlServer = None
+        self.screenManager = None
         self.currentScreen = None
 
+        self.status = 'Initialised'
+
         Logger.debug("Initialising...Done!")
+
+
+    def build(self):
+
+        kwargs = {'piBlockApp': self}
+
+        self.screenManager = PiBlockScreenManager(**kwargs)
+
+        self.screenManager.add_widget(StartupScreen(name='startup', piBlockEngine=self.screenManager.app.piBlockEngine))
+        self.screenManager.add_widget(TenderScreen(name='tender', piBlockEngine=self.screenManager.app.piBlockEngine))
+
+        self.status = 'Initialised'
+
+        return self.screenManager
 
     #-------------------------------------------------------------
     # Overriden Methods
@@ -211,27 +453,26 @@ class PiBlockApp(App):
     def on_start(self):
         Logger.debug("on_start...")
 
-        self.root.current = 'startup'
+        # self.root.current = 'startup'
+        # self.currentScreen = self.root.ids['startup']
+        
 
-        self.currentScreen = self.root.ids['startup']
+        # Logger.debug("ROOT IDS = {}".format(self.screenManager.current.ids.keys()))
+        # Logger.debug("ROOT IDS in Current Screen = {}".format(self.currentScreen.ids.keys()))
 
-        Logger.debug("ROOT IDS = {}".format(self.root.ids.keys()))
-        Logger.debug("ROOT IDS in Current Screen = {}".format(self.currentScreen.ids.keys()))
-
-        self.testCommonGUITreeRefsInCurrentScreen()
+        # self.testCommonGUITreeRefsInCurrentScreen()
 
         Logger.debug("Scheduling Running Tasks...")
-        Clock.schedule_once(lambda dt: self.loadStaticInfo(), 0.5)
+        # Clock.schedule_once(lambda dt: self.loadStaticInfo(), 0.5)
         Clock.schedule_once(lambda dt: self.startControlServer(), 0.1)
-        Clock.schedule_once(lambda dt: self.loadQuoteInfo(), 0.3)
+        # Clock.schedule_once(lambda dt: self.loadQuoteInfo(), 0.3)
         
-        Clock.schedule_interval(self.updateClockInfo, 1)
-        Clock.schedule_interval(self.updateQuoteInfo, 60)
+        # Clock.schedule_interval(self.updateClockInfo, 1)
+        # Clock.schedule_interval(self.updateQuoteInfo, 60)
 
         Logger.debug("Scheduling Running Tasks...Done!")
 
-        self.status = 'Initialised'
-        self.getHeaderStatusLabel().text = "Status: [b]{}[/b]".format(self.status)
+        # self.getHeaderStatusLabel().text = "Status: [b]{}[/b]".format(self.status)
 
         # Clock.schedule_interval(self.updateSystemInfo, 1)
 
@@ -240,58 +481,6 @@ class PiBlockApp(App):
     #-------------------------------------------------------------
     # Convenience Methods
     #-------------------------------------------------------------
-
-    def updateClockInfo(self, nap):
-        Logger.debug("Update ClockUI Objects...")
-
-        self.getHeaderClockDateLabel().text = strftime('[b]%A, %d %b %Y[/b]')
-        self.getHeaderClockTimeLabel().text = strftime('[b]%I:%M[/b]:%S %p')
-
-        Logger.debug("Update ClockUI Objects...Done!")
-
-    def updateQuoteInfo(self, nap):
-        Logger.debug("Updating Quote Info...")
-
-        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
-
-        if self.piBlockEngine.defaultCurrency != None:
-            Logger.debug("Setting Quote Info...")
-
-            self.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
-            self.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
-
-        Logger.debug("Loading & Setting Quote Info...Done!")
-
-    def loadStaticInfo(self):
-        Logger.debug("Loading Static Info...")
-
-        self.getHeaderQuoteSrcLabel().text = "[i]source: {}".format(self.piBlockEngine.pricingLookupURL)
-        self.loadStaticImages()
-
-        Logger.debug("Loading Static Info...Done!")
-
-    def loadQuoteInfo(self):
-        Logger.debug("Updating Quote Info...")
-
-        Logger.debug("Default Currency = {}".format(self.piBlockEngine.defaultCurrency))
-
-        if self.piBlockEngine.defaultCurrency != None:
-            Logger.debug("Setting Quote Info...")
-
-            self.getHeaderQuoteBTCRateLabel().text = "[b]{} {}1.00[/b] = [b]{} BTC[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForBTC(self.piBlockEngine.defaultCurrency))
-            self.getHeaderQuoteCurrencyRateLabel().text = "[b]1 BTC[/b] = [b]{} {}{}[/b]".format(self.piBlockEngine.defaultCurrency, self.piBlockEngine.defaultCurrencySymbol, self.piBlockEngine.rateForCurrency(self.piBlockEngine.defaultCurrency))
-
-        Logger.debug("Loading & Setting Quote Info...Done!")
-    
-
-    def loadStaticImages(self):
-        Logger.debug("Loading & Setting Static Images...")
-
-        self.getHeaderBizLogo().source = BIZLOGO
-        self.getFooterPBLogoThumbnailImage().source = PBLOGOSMALL
-        self.getFooteraADLLogThumbNailImage().source = ADLLOGOSMALL
-
-        Logger.debug("Loading & Setting Static Images...Done!")
 
     def themeColor(self):
         Logger.debug("ThemeColor Requested...")
@@ -327,6 +516,57 @@ class PiBlockApp(App):
                 return self.piBlockEngine.config.get_configValueForKey(key)
             else:
                 return "Unknown"
+
+    def moveIntoTenderingState(self):
+
+        Logger.debug("BEFORE: self.root.current = {}".format(self.root.current))
+        
+        if self.isAppStatusInitialised():
+
+            self.screenManager.current = 'tender'
+            
+            self.status = 'Tendering'
+
+            Logger.debug("AFTER: self.root.current = {}".format(self.root.current))
+
+        else:
+
+            raise "PiBlock cannot move into the Tendering State because it is in a '{}' state.".format(self.status)
+
+    def moveOutOfTenderingState(self):
+
+        Logger.debug("BEFORE: self.root.current = {}".format(self.root.current))
+        
+        if self.isAppStatusTendering():
+
+            self.screenManager.current = 'startup'
+
+            self.status = 'Initialised'
+            
+            Logger.debug("AFTER: self.root.current = {}".format(self.root.current))
+
+        else:
+
+            raise "PiBlock cannot move out of the Tendering State because it is in a '{}' state.".format(self.status)   
+
+    def isAppStatusProcessing(self):
+        if self.status == 'Processing':
+            return True
+        else:
+            return False
+
+    def isAppStatusTendering(self):
+        if self.status == 'Tendering':
+            return True
+        else: 
+            return False
+
+    def isAppStatusInitialised(self):
+
+        if self.status == 'Initialised':
+            return True
+        else:
+            return False
 
     #-------------------------------------------------------------
     # PiBlock SSH Control Server Convenience Methods
@@ -369,56 +609,13 @@ class PiBlockApp(App):
 
 
     #-------------------------------------------------------------
-    # Common Screen Element References
-    #-------------------------------------------------------------
-
-    def getHeader(self):
-        return self.root.ids['header']
-
-    def getHeaderStatusLabel(self):
-        return self.getHeader().ids['statuslabel']
-
-    def getHeaderClock(self):
-        return self.getHeader().ids['clock']
-
-    def getHeaderClockTimeLabel(self):
-        return self.getHeaderClock().ids['time']
-
-    def getHeaderClockDateLabel(self):
-        return self.getHeaderClock().ids['date']
-
-    def getHeaderBizLogo(self):
-        return self.getHeader().ids['bizlogo']
-
-    def getHeaderQuote(self):
-        return self.getHeader().ids['quote']
-
-    def getHeaderQuoteBTCRateLabel(self):
-        return self.getHeaderQuote().ids['quotebtcratelabel']
-
-    def getHeaderQuoteCurrencyRateLabel(self):
-        return self.getHeaderQuote().ids['quotecurrencyratelabel']
-
-    def getHeaderQuoteSrcLabel(self):
-        return self.getHeaderQuote().ids['quotesrclabel']
-
-    def getFooter(self):
-        return self.root.ids['footer']
-
-    def getFooterPBLogoThumbnailImage(self):
-        return self.getFooter().ids['pblogothumbnail']
-
-    def getFooteraADLLogThumbNailImage(self):
-        return self.getFooter().ids['adllogothumbnail']
-
-    #-------------------------------------------------------------
     # SomeTests
     #-------------------------------------------------------------
 
     def testCommonGUITreeRefsInCurrentScreen(self):
 
         Logger.debug("Ids in Current = {}".format(self.root.ids.keys()))
-        Logger.debug("Ids in Current Screen = {}".format(self.currentScreen.ids.keys()))
+        # Logger.debug("Ids in Current Screen = {}".format(self.currentScreen.ids.keys()))
         Logger.debug("Ids in Current Screen Header = {}".format(self.getHeader().ids.keys()))
         
         Logger.debug("Ids in Current Screen Header BizLogo = {}".format(self.getHeaderBizLogo()))
