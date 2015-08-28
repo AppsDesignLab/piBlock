@@ -40,7 +40,7 @@ IMAGESFOLDER = RECOURCESFOLDER + 'images/'
 
 #COMMON IMAGES
 PBSMALLLOGO = IMAGESFOLDER + 'pbLogoSmall.png'
-ADLSMALLLOGO = IMAGESFOLDER + 'AppsDesignLogo32.png'
+ADLSMALLLOGO = IMAGESFOLDER + 'appsDesignLogo64.png'
 BIZLOGO = IMAGESFOLDER + 'bizLogo.png'
 #STARTUP SCREEN IMAGES
 PBBANNER = IMAGESFOLDER + 'pbMainBanner.png'
@@ -61,7 +61,7 @@ class PiBlockApp(App):
     def pbSmallLogoImagePath(self):
         return "{}".format(PBSMALLLOGO)
 
-    property
+    @property
     def adlSmallLogoImagePath(self):
         return "{}".format(ADLSMALLLOGO)
 
@@ -251,6 +251,8 @@ class PiBlockApp(App):
         
         if self.isAppStatusInitialised():
 
+            Window.clearcolor = get_color_from_hex('#FFFFFF')
+
             self.screenManager.current = 'tender'
             
             self.status = 'Tendering'
@@ -266,6 +268,8 @@ class PiBlockApp(App):
         Logger.debug("BEFORE: self.root.current = {}".format(self.root.current))
         
         if self.isAppStatusTendering():
+
+            Window.clearcolor = get_color_from_hex('#FFFFFF')
 
             self.screenManager.current = 'startup'
 
@@ -365,12 +369,13 @@ if __name__ == '__main__':
     # Config.set('graphics', 'width', '1280')
     # Config.set('graphics', 'height', '720')  # 16:9
     Config.set('graphics', 'resizable', '1')
+    Config.set('graphics', 'borderless', '1')
     Config.set('input', 'mouse', 'mouse,disable_multitouch')
     Config.set('kivy', 'log_enable', 1)
     Config.set('kivy', 'log_level', 'debug')
     LabelBase.register(name='Roboto', fn_regular=FONTSFOLDER  + 'Roboto-Light.ttf', fn_bold=FONTSFOLDER  + 'Roboto-Bold.ttf', fn_italic=FONTSFOLDER + 'Roboto-LightItalic.ttf')
     LabelBase.register(name='RobotoCondensed', fn_regular=FONTSFOLDER + 'RobotoCondensed-Light.ttf', fn_bold=FONTSFOLDER  + 'RobotoCondensed-Regular.ttf')
     # Window.fullscreen = True
-    Window.size = (960, 540)
+    # Window.size = (960, 540)
     Window.clearcolor = get_color_from_hex('#FFFFFF')
     PiBlockApp().run()

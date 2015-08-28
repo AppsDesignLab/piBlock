@@ -40,14 +40,19 @@ class PiBlockScreenManager(ScreenManager):
     # Common UI Element Updates
     #-------------------------------------------------------------
 
-    def loadCommon(self):
+    def loadCommonUI(self):
         self.loadQuoteInfo()
         self.loadStaticInfo()
 
-    def updateCommon(self, nap):
-        self.updateStatusInfo(1)
-        self.updateClockInfo(1)
-        self.updateQuoteInfo(15)
+    def scheduleCommonUpdates(self):
+        Clock.schedule_interval(self.updateStatusInfo, 1)
+        Clock.schedule_interval(self.updateClockInfo, 1)
+        Clock.schedule_interval(self.updateQuoteInfo, 60)
+
+    def unscheduleCommonUpdates(self):
+        Clock.unschedule(self.updateStatusInfo)
+        Clock.unschedule(self.updateClockInfo)
+        Clock.unschedule(self.updateQuoteInfo)
 
     def loadQuoteInfo(self):
         Logger.debug("Updating Quote Info...")
@@ -73,10 +78,29 @@ class PiBlockScreenManager(ScreenManager):
     def loadStaticImages(self):
         Logger.debug("Loading & Setting Static Images...")
         print("{}".format(self.app.bizLogoImagePath))
+        print("{}".format(self.app.pbSmallLogoImagePath))
+        print("{}".format(self.app.adlSmallLogoImagePath))
 
-        self.getHeaderBizLogo().source = str(self.app.bizLogoImagePath)
-        self.getFooterPBLogoThumbnailImage().source = str(self.app.pbSmallLogoImagePath)
-        self.getFooterADLLogThumbNailImage().source = str(self.app.adlSmallLogoImagePath)
+
+        try:
+            self.getHeaderBizLogo().source = str(self.app.bizLogoImagePath)
+        
+        except Exception as e:
+            Logger.error("Error Loading Business Logo Image file at path '{}' beacause:\n{}".format(self.app.bizLogoImagePath, e.message))
+
+        try:
+            self.getFooterPBLogoThumbnailImage().source = str(self.app.pbSmallLogoImagePath)
+        
+        except Exception as e:
+            Logger.error("Error Loading Business Logo Image file at path '{}' beacause:\n{}".format(self.app.pbSmallLogoImagePath, e.message))
+
+        try:
+            self.getFooterADLLogoThumbnailImage().source = str(self.app.adlSmallLogoImagePath)
+        
+        except Exception as e:
+            Logger.error("Error Loading Business Logo Image file at path '{}' beacause:\n{}".format(self.app.adlSmallLogoImagePath, e.message))
+
+        
 
         Logger.debug("Loading & Setting Static Images...Done!")
 
@@ -151,5 +175,5 @@ class PiBlockScreenManager(ScreenManager):
     def getFooterPBLogoThumbnailImage(self):
         return self.getFooter().ids['pblogothumbnail']
 
-    def getFooterADLLogThumbNailImage(self):
+    def getFooterADLLogoThumbnailImage(self):
         return self.getFooter().ids['adllogothumbnail']

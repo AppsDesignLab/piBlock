@@ -120,16 +120,19 @@
             
 <FooterLayout@BoxLayout>:
     size_hint: 1, 0.1
-    GridLayout:
-        cols: 3
+    BoxLayout:
         id: footer
+        
+        orientation: 'horizontal'
         Image:
             id: pblogothumbnail
-            size_hint: 0.5, 1
+            size_hint: 0.3, 1
+            halign: 'right'
         RobotoCondensedFooterLabel:
         Image:
             id: adllogothumbnail
-            size_hint: 0.5, 1
+            size_hint: 0.3, 1
+            halign: 'left'
 
 <PiBlockStartupScreen@Screen>:
     name: 'startup'
@@ -142,11 +145,11 @@
 
         BoxLayout:
             orientation: 'vertical'
+            spacing: 5
             Image:
                 id: smileyIconImage
                 source: app.startupSmileyImagePath
-                
-
+                size_hint: 1, 0.8
             Image:
                 id: pbMainBannerImage
                 source: app.pbBannerImagePath
@@ -158,6 +161,7 @@
                 BoxLayout:
                     orientation: 'vertical'
                     spacing: 0
+                    size_hint: 0.5, 1
                     RobotoInfoLabel:
                         halign: 'left'
                         text: "[b]PiBlock's Current Settings[/b]"
@@ -226,10 +230,11 @@
 
         BoxLayout:
             orientation: 'vertical'
+            spacing: 5
             Image:
                 id: smileyIconImage
                 source: app.tenderSmileyImagePath
-
+                size_hint: 1, 0.8
             Image:
                 id: pbMainBannerImage
                 source: app.acceptBitcoinImagePath
