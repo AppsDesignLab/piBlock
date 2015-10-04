@@ -122,7 +122,6 @@
     size_hint: 1, 0.1
     BoxLayout:
         id: footer
-        
         orientation: 'horizontal'
         Image:
             id: pblogothumbnail
@@ -139,22 +138,22 @@
     BoxLayout:
         orientation: 'vertical'
         spacing: 5
-        Image:
-            id: smileyIconImage
-            source: app.startupSmileyImagePath
-            size_hint: 1, 0.8
-        Image:
-            id: pbMainBannerImage
-            source: app.pbBannerImagePath
+        BoxLayout:
+            spacing: 10
+            orientation: 'vertical'
+            size_hint: 1, 0.7
+            Image:
+                id: pbMainBannerImage
+                source: app.pbBannerImagePath
 
         BoxLayout:
             orientation: 'horizontal'
             spacing: 0
+            size_hint: 1, 0.3
 
             BoxLayout:
                 orientation: 'vertical'
                 spacing: 0
-                size_hint: 0.5, 1
                 RobotoInfoLabel:
                     halign: 'left'
                     text: "[b]PiBlock's Current Settings[/b]"
@@ -180,8 +179,10 @@
                         text: "[i]Email:[/i] [b]{}[/b]".format(app.getConfigValueForKey('email'))
                         halign: 'left'
                         valign: 'bottom'
-                        
-
+            Image:
+                id: smileyIconImage
+                source: app.startupSmileyImagePath
+                    
             BoxLayout:
                 orientation: 'vertical'
                 spacing: 0
@@ -213,21 +214,31 @@
     BoxLayout:
         orientation: 'vertical'
         spacing: 5
-        Image:
-            id: smileyIconImage
-            source: app.tenderSmileyImagePath
-            size_hint: 1, 0.8
-        Image:
-            id: pbMainBannerImage
-            source: app.acceptBitcoinImagePath
-
         BoxLayout:
+            spacing: 10
+            orientation: 'vertical'
+            size_hint: 1, 0.7
+            Image:
+                id: pbMainBannerImage
+                source: app.acceptBitcoinImagePath
+
             RobotoTenderingScreenMessageLabel:
                 id: sample
                 text: '[b]Ready to accept your Bitcoin![/b]'
                 halign: 'center'
                 valign: 'middle'
-    
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 0
+            size_hint: 1, 0.3
+            
+            Image:
+                id: smileyIconImage
+                source: app.tenderSmileyImagePath
+
+        
+                
             
 
 
