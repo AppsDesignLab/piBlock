@@ -1,11 +1,9 @@
 To get things running:
 
-(a) virtualenv venv
-(b) . venv/bin/activate
-	-- if you dont have setup.py ... u need to integrate setup_tools
-(c) pip install --editable .
-
-
-pyvenv-3.4 venv
-source venv/bin.activate
-(venv)$ pip install --editable .
+1. Make sure you have python installed with the correct $PATH
+2. Make sure you have PIP installed
+3. Its handy to have PYENV installed
+4. Check Pyenv versions
+5. Install Kivy
+6. Check Python version in Kivy
+7. For PiBlock, Install URLLIB3, Twisted, PyCrypto, PyAsn1 with sudo kivy -m pip install <Modulename>

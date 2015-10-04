@@ -1,0 +1,56 @@
+[Ids in Root = 
+{
+    'laststartedlabel'] <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x1194bc0b8>>, 
+    'defaultcurrencylabel': <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x11946a870>>, 
+    'footer': <WeakProxy to <kivy.factory.FooterLayout object at 0x1194eb9a8>>, 
+    'sshaddresslabel': <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x1194e2390>>, 
+    'content': <WeakProxy to <kivy.uix.boxlayout.BoxLayout object at 0x11943b1f0>>, 
+    'header': <WeakProxy to <kivy.factory.HeaderLayout object at 0x1193a7188>>, 
+    'emaillabel': <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x119493b48>>, 
+    'controlportlabel': <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x119485530>>, 
+    'timeoutlabel': <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x119471e88>>, 
+    'smileyIcon': <WeakProxy to <kivy.uix.image.Image object at 0x11943bd50>>, 
+    'fpslabel': <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x1194d0ce8>>, 
+    'uptimelabel': <WeakProxy to <kivy.factory.RobotoCondensedInfoValueLabel object at 0x1194c76d0>>, 
+    'pbMainBanner': <WeakProxy to <kivy.uix.image.Image object at 0x119445d50>>
+}
+
+[Ids in Header = 
+{
+    'info'] <WeakProxy to <kivy.uix.boxlayout.BoxLayout object at 0x1121b4808>>, 
+    'bizlogo': <WeakProxy to <kivy.factory.bizLogoImagePath object at 0x11217b8d8>>, 
+    'quote': <WeakProxy to <kivy.factory.PBQuote object at 0x1121c8a78>>, 
+    'statuslabel': <WeakProxy to <kivy.factory.PBStatusLabel object at 0x1121bb3f8>>, 
+    'clock': <WeakProxy to <kivy.factory.PBClock object at 0x112182c80>>
+}
+
+[Ids in Footer = 
+{
+    'pbLogoSmallFooter'] <WeakProxy to <kivy.uix.image.Image object at 0x112f44530>>, 
+    'adlLogoSmallFooter': <WeakProxy to <kivy.uix.image.Image object at 0x112f56a10>>, 
+    'footer': <WeakProxy to <kivy.uix.gridlayout.GridLayout object at 0x112f3c598>>
+}
+
+GridLayout:
+    cols: 1
+    rows: 3
+    padding: 10
+    HeaderLayout:
+        id: header
+        
+    PiBlockScreenManager:
+        transition: FadeTransition()
+        StartupScreen:
+
+        TenderScreen:
+            
+
+    FooterLayout:
+        id: footer
+
+
+
+
+
+
+

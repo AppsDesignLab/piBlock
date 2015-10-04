@@ -36,12 +36,12 @@ class PiBlockStartupScreen(Screen):
         Logger.debug("Entering Screen '{}'...".format(self.name))
 
         Logger.debug("Scheduling Once Off Tasks...")
-        Clock.schedule_once(lambda dt: self.manager.loadCommonUI(), 0.1)
+        # Clock.schedule_once(lambda dt: self.manager.loadCommonUI(), 0.1)
         # Clock.schedule_once(lambda dt: self.loadStaticInfo(), 0.2)
         Logger.debug("Scheduling Once Off Tasks...Done!")
 
         Logger.debug("Scheduling Common Recurring Tasks...")
-        self.manager.scheduleCommonUpdates()
+        # self.manager.scheduleCommonUpdates()
         Logger.debug("Scheduling Comnmon Recurring Tasks...Done!")
 
         Logger.debug("Scheduling Screen Specific Recurring Tasks...")
@@ -53,7 +53,7 @@ class PiBlockStartupScreen(Screen):
     def on_pre_leave(self):
         Logger.debug("Pre-Leaving Screen '{}'...".format(self.name))
         
-        self.manager.unscheduleCommonUpdates()
+        # self.manager.unscheduleCommonUpdates()
 
         Clock.unschedule(self.updateSystemInfo)
 
